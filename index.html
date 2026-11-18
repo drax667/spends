@@ -40,16 +40,20 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
 .month span{font-size:12.5px;font-weight:700;min-width:76px;text-align:center}
-.lbar{position:fixed;top:var(--sat);left:0;right:0;height:2px;z-index:7;overflow:hidden;opacity:0;transition:opacity .25s;pointer-events:none}
+/* calm loading glow: fades in only if loading takes a moment */
+.lbar{position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+.lbar::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(61,220,132,.7),transparent);animation:glide 1.8s cubic-bezier(.45,0,.55,1) infinite}
 .lbar.on{opacity:1}
-.lbar i{position:absolute;top:0;bottom:0;width:40%;background:var(--acc);border-radius:2px;animation:lb 1.1s var(--ease) infinite}
-@keyframes lb{from{left:-40%}to{left:100%}}
+@keyframes glide{from{transform:translateX(-100%)}to{transform:translateX(225%)}}
 .ptr{position:fixed;top:calc(var(--sat) + 58px);left:50%;margin-left:-17px;width:34px;height:34px;border-radius:50%;background:var(--card2);border:1px solid var(--line);
   display:grid;place-items:center;color:var(--acc);opacity:0;z-index:4;pointer-events:none}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .card.list{padding:2px 14px}
 .lbl,label{display:block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--mute);font-weight:700}
 label,.lbl.mt{margin:18px 2px 9px}
+.lbl.pl{margin:16px 2px 8px}
 .lbl.c{text-align:center}
 .hero .amt{font-size:34px;font-weight:800;letter-spacing:-.045em;margin:4px 0 8px;line-height:1.1}
 .pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--card2)}
@@ -121,27 +125,42 @@ nav .fab .ic{stroke-width:2.4}
   max-height:90vh;overflow:auto;overscroll-behavior:contain;transform:translateY(105%);transition:transform .38s var(--ease);will-change:transform}
 .sheet.open .panel{transform:translateY(0)}
 .panel.drag{transition:none}
-.grab{width:38px;height:5px;border-radius:5px;background:#34343b;margin:2px auto 14px}
+.panel.tall{height:86vh;display:flex;flex-direction:column;overflow:hidden;padding-bottom:calc(14px + var(--sab))}
+.panel.tall #sb{flex:1;min-height:0;display:flex;flex-direction:column}
+.grab{width:38px;height:5px;border-radius:5px;background:#34343b;margin:2px auto 14px;flex:none}
 .swap{animation:fadeUp .28s var(--ease) both}
 .txhead{display:flex;align-items:center;gap:12px}
+.txhead .of{min-height:15px}
 .lgamt{font-size:18px}
 .qbar{display:flex;align-items:center;gap:10px;margin:0 0 14px}
 .qprog{flex:1;height:4px;background:var(--card2);border-radius:4px;overflow:hidden}
-.qprog i{display:block;height:100%;background:var(--acc);border-radius:4px}
+.qprog i{display:block;height:100%;background:var(--acc);border-radius:4px;transition:width .4s var(--ease)}
 .qbar span{font-size:11px;color:var(--mute);font-weight:700}
 .qbar button{font-size:12px;font-weight:800;color:var(--acc);padding:6px 2px}
+/* tag stage: categories ⇄ subcategories slide side by side, fixed height */
+.stage{height:min(430px,52vh);overflow:hidden;margin:0 -16px}
+.track{display:flex;width:200%;height:100%;transition:transform .4s var(--ease);will-change:transform}
+.track.sub{transform:translateX(-50%)}
+.pane{width:50%;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.pane::-webkit-scrollbar{display:none}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.opt{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 4px 10px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:11.5px;font-weight:700;text-align:center}
+.opt{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 4px 10px;min-height:76px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:700;text-align:center}
 .opt.on{border-color:var(--acc);background:var(--accBg)}
+.lastb{position:absolute;top:6px;right:8px;font-style:normal;font-size:8px;font-weight:800;letter-spacing:.07em;color:var(--amber)}
+.back{display:flex;align-items:center;gap:10px;width:100%;padding:12px 0 14px;text-align:left;color:var(--mute)}
+.back b{color:var(--ink);font-size:16px;font-weight:800;letter-spacing:-.02em}
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sopt{position:relative;background:var(--card2);border:1px solid var(--line);border-radius:14px;min-height:56px;padding:10px 14px;font-size:14px;font-weight:700;text-align:left;line-height:1.25}
+.sopt.on{border-color:var(--acc);background:var(--accBg);color:var(--acc)}
+.sopt.add{color:var(--mute);border-style:dashed}
 .picked{display:flex;align-items:center;gap:12px;width:100%;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:9px 14px 9px 9px;margin-top:16px;text-align:left}
 .picked b{flex:1;font-size:14px;font-weight:800}
 .picked .chg{color:var(--acc);font-size:12px;font-weight:700}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:9px 14px;min-height:38px;font-size:12.5px;font-weight:700}
-.chip.lg{padding:12px 17px;font-size:13.5px;min-height:46px}
-.chip.sm{padding:6px 12px;min-height:32px;font-size:12px}
-.chip.red{color:var(--red)}
-.chip.sc{flex:none;min-width:52px;text-align:center;font-weight:800}
+.chip.sc{flex:none;height:40px;min-height:0;min-width:56px;padding:0 15px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.chip.cin{gap:2px;padding:0 6px 0 14px;color:var(--acc)}
+.chip.cin input{width:112px;min-height:0;height:36px;padding:0 4px;border:0;background:none;color:var(--ink);font:800 16px "Plus Jakarta Sans",-apple-system,sans-serif}
 .chip.on,.cchip.on{border-color:var(--acc);background:var(--accBg);color:var(--acc)}
 .chip.add{color:var(--mute);border-style:dashed}
 .hscroll{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -150,11 +169,7 @@ nav .fab .ic{stroke-width:2.4}
 input{width:100%;min-height:46px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 13px;color:var(--ink);font:600 16px "Plus Jakarta Sans",-apple-system,sans-serif;transition:border-color .2s}
 input:focus{outline:none;border-color:var(--acc)}
 input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-top:10px;letter-spacing:-.04em;min-height:72px}
-.share{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:2px 4px 2px 14px;transition:border-color .2s}
-.share:focus-within{border-color:var(--acc)}
-.share span{color:var(--mute);font-weight:700;font-size:12px;white-space:nowrap}
-.share input{border:0;background:none;min-height:44px;text-align:right;font-weight:800;font-size:18px;padding:8px 10px}
-.spnote{margin-top:10px;font-size:12px;color:var(--mute);font-weight:600}
+.spnote{margin-top:10px;font-size:12px;color:var(--mute);font-weight:600;min-height:18px}
 .spnote b{color:var(--acc);font-weight:800}
 .btn{display:block;width:100%;margin-top:16px;padding:14px;min-height:50px;border-radius:16px;background:var(--acc);color:var(--accInk);font-size:14px;font-weight:800;text-align:center}
 .btn.sec2{background:var(--card2);color:var(--ink);border:1px solid var(--line);margin-top:12px}
@@ -170,18 +185,32 @@ input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-t
 .dayamt{font-size:28px;font-weight:800;letter-spacing:-.04em;margin:2px 0 12px}
 .setup{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:30px 20px;margin-top:20px}
 .setup h2{font-size:17px;font-weight:800}
-.mc+.mc{border-top:1px solid var(--line)}
-.mrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;text-align:left}
-.mrow>.ic{color:var(--dim);transition:transform .2s var(--ease)}
+/* manage categories */
+.mhead{flex:none;padding:0 2px 12px}
+.mhead h3{font-size:19px;font-weight:800;letter-spacing:-.03em}
+.mhead .t2{font-size:12.5px;margin-top:2px}
+.mlist{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0 -16px;padding:0 16px;-webkit-overflow-scrolling:touch}
+.mfoot{flex:none;padding-top:12px;border-top:1px solid var(--line);margin:0 -16px;padding-left:16px;padding-right:16px}
+.mfoot .btn{margin-top:0}
+.mc{border-bottom:1px solid var(--line)}
+.mrow{display:flex;align-items:center;gap:14px;width:100%;padding:14px 0;text-align:left}
+.mrow .oi{width:42px;height:42px;border-radius:14px}
+.mname{font-size:15.5px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mmeta{font-size:12.5px;color:var(--mute);font-weight:500;margin-top:1px}
+.mrow>.ic{color:var(--dim);transition:transform .25s var(--ease)}
 .mrow>.ic.on{transform:rotate(90deg)}
-.mbody{padding:0 0 12px 48px;animation:fadeUp .25s var(--ease) both}
-.macts{display:flex;gap:8px;margin:0 0 8px}
-.msub{display:flex;align-items:center;gap:6px;padding:3px 0;font-weight:600;font-size:12.5px}
+.mbody{padding:0 0 14px 56px;animation:fadeUp .25s var(--ease) both}
+.macts{display:flex;gap:8px;margin:0 0 6px}
+.macts .chip{font-size:13.5px;min-height:40px;padding:9px 16px}
+.chip.red{color:var(--red)}
+.msub{display:flex;align-items:center;gap:8px;min-height:50px;font-size:14.5px;font-weight:600;border-top:1px solid var(--line)}
 .msub span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mini{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--mute);background:var(--card2);flex:none}
+.mini{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;color:var(--mute);background:var(--card2);flex:none}
 .mini.red{color:var(--red)}
-.mini .ic{width:15px;height:15px}
-.mbody .chip.add{margin-top:6px}
+.mini .ic{width:17px;height:17px}
+.addsub{display:flex;align-items:center;justify-content:center;width:100%;min-height:46px;margin-top:8px;border:1px dashed var(--line);border-radius:14px;color:var(--mute);font-size:14px;font-weight:700}
+.fixed-note{font-size:13px;color:var(--mute);margin:0 0 6px}
+/* trends */
 .bigamt{font-size:30px;font-weight:800;letter-spacing:-.045em;margin-top:2px}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .kpis>div{background:var(--card2);border-radius:14px;padding:10px 11px;min-width:0}
@@ -233,8 +262,8 @@ input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-t
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--sab));transform:translate(-50%,12px);background:#f4f4f6;color:#0b0b0c;padding:10px 15px;border-radius:14px;font-size:12.5px;font-weight:700;
   opacity:0;transition:opacity .22s,transform .3s var(--ease);pointer-events:none;z-index:30;max-width:88%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.opt,.chip,.cchip,.btn,.tagbtn,.month button,.nudge,.cell,.insc,.picked,.mini{transition:transform .14s var(--ease),border-color .2s,background .2s}
-.opt:active,.chip:active,.cchip:active,.btn:active,.tagbtn:active,nav button:active,.month button:active,.nudge:active,.cell:active,.insc:active,.picked:active,.mini:active{transform:scale(.96)}
+.opt,.sopt,.chip,.cchip,.btn,.tagbtn,.month button,.nudge,.cell,.insc,.picked,.mini,.addsub,.back{transition:transform .14s var(--ease),border-color .2s,background .2s,color .2s}
+.opt:active,.sopt:active,.chip:active,.cchip:active,.btn:active,.tagbtn:active,nav button:active,.month button:active,.nudge:active,.cell:active,.insc:active,.picked:active,.mini:active,.addsub:active{transform:scale(.96)}
 nav .fab:active{transform:scale(.92)}
 .enter>*{animation:fadeUp .42s var(--ease) both}
 .enter>*:nth-child(2){animation-delay:.04s}.enter>*:nth-child(3){animation-delay:.08s}.enter>*:nth-child(4){animation-delay:.12s}
@@ -244,7 +273,6 @@ nav .fab:active{transform:scale(.92)}
 </style>
 </head>
 <body>
-<div class="lbar" id="lbar"><i></i></div>
 <header class="top">
   <h1 id="title">Spends</h1>
   <div class="hd-r">
@@ -255,6 +283,7 @@ nav .fab:active{transform:scale(.92)}
       <button id="mnext" onclick="shiftMonth(1)" aria-label="Next month"><svg viewBox="0 0 24 24" class="ic sm"><path d="m9 6 6 6-6 6"/></svg></button>
     </div>
   </div>
+  <div class="lbar" id="lbar"></div>
 </header>
 <div class="ptr" id="ptr"><svg viewBox="0 0 24 24" class="ic"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></div>
 <main id="view"></main>
@@ -295,6 +324,8 @@ const P = {
   spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
   search:'<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
   chevR:'<path d="m9 6 6 6-6 6"/>',
+  chevL:'<path d="m15 6-6 6 6 6"/>',
+  x:'<path d="M6 6l12 12M18 6 6 18"/>',
   cal:'<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M4 10h16M9 3v4M15 3v4"/>',
   leaf:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19 13 11"/>',
   chart:'<path d="M6 20v-8M12 20V5M18 20v-5M3 20h18"/>',
@@ -359,7 +390,8 @@ const dayLabel = t => {
 const dailyArr = (list, m) => { const a = Array(daysIn(m)).fill(0); list.forEach(x => a[new Date(x.t).getDate() - 1] += x.amount); return a; };
 const persist = () => store.set('spends.data', JSON.stringify(D));
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600); }
-const setBar = on => $('lbar').classList.toggle('on', on);
+let barT;
+const setBar = on => { clearTimeout(barT); if (on) barT = setTimeout(() => $('lbar').classList.add('on'), 350); else $('lbar').classList.remove('on'); };
 
 /* ---------- server ---------- */
 async function api(action, payload) {
@@ -540,22 +572,31 @@ function jumpUntagged() {
 function openTagFromList(id) { openTag(id, untaggedIn(month).map(x => x.id)); }
 function startQueue() { const ids = untaggedIn(month).map(x => x.id); if (ids.length) openTag(ids[0], ids); }
 
-/* ---------- SPLIT (shared) ---------- */
-const SPLITS = [1, 2, 3, 4, 5, 6, 'c'];
-function splitChips(cur, fn) {
-  return SPLITS.map(n => `<button class="chip sc ${cur === n ? 'on' : ''}" onclick="${fn}(${n === 'c' ? "'c'" : n})">${n === 1 ? 'Just me' : n === 'c' ? 'Custom ₹' : '÷' + n}</button>`).join('');
+/* ---------- SPLIT (shared row; custom amount opens inside its own chip, so nothing resizes) ---------- */
+function splitRowHtml(cur, fn, val, inId, inFn) {
+  return [1, 2, 3, 4, 5, 6].map(n => `<button class="chip sc ${cur === n ? 'on' : ''}" onclick="${fn}(${n})">${n === 1 ? 'Just me' : '÷' + n}</button>`).join('')
+    + (cur === 'c'
+      ? `<label class="chip sc on cin">₹<input id="${inId}" class="num" type="number" inputmode="decimal" placeholder="Your share" value="${val || ''}" oninput="${inFn}"></label>`
+      : `<button class="chip sc" onclick="${fn}('c')">Custom ₹</button>`);
 }
-const shareInput = (id, val, fn) => `<div class="share"><span>Your share ₹</span><input id="${id}" class="num" type="number" inputmode="decimal" placeholder="0" value="${val || ''}" oninput="${fn}"></div>`;
+function revealCustom(id) {
+  const i = $(id); if (!i) return;
+  i.focus();
+  const row = i.closest('.hscroll'); if (row) row.scrollTo({ left: row.scrollWidth, behavior: 'smooth' });
+}
 
 /* ---------- TAG SHEET ---------- */
+function lastTagFor(x) {
+  const v = String(x.vendor).toLowerCase();
+  const y = D.tx.find(t => t !== x && t.cat && t.by !== 'auto' && String(t.vendor).toLowerCase() === v);
+  return y ? { cat: y.cat, sub: y.sub } : null;
+}
 function initPick(id, queue) {
-  const x = byId(id);
-  const split = x.paid > 0;
-  pick = { id, cat: x.cat, sub: x.sub, step: x.cat ? 'sub' : 'cat', queue: queue || null,
-           base: split ? x.paid : x.amount,
-           n: split ? (x.split && x.split !== 'custom' ? (Number(x.split) || 'c') : 'c') : 1,
-           share: x.amount };
-  if (typeof pick.n === 'number' && !SPLITS.includes(pick.n)) pick.n = 'c';
+  const x = byId(id), split = x.paid > 0;
+  let n = 1;
+  if (split) { const k = Number(x.split); n = k >= 2 && k <= 6 ? k : 'c'; }
+  pick = { id, cat: x.cat, sub: x.sub, step: x.cat && subsOf(x.cat).length ? 'sub' : 'cat', queue: queue || null,
+           base: split ? x.paid : x.amount, n, share: x.amount, last: lastTagFor(x), saving: false };
 }
 const shareOf = () => pick.n === 1 ? pick.base : pick.n === 'c' ? (Number(pick.share) || 0) : r2(pick.base / pick.n);
 function openTag(id, queue) {
@@ -570,48 +611,77 @@ function drawTag(anim) {
     h += `<div class="qbar"><div class="qprog"><i style="width:${(i / n) * 100}%"></i></div><span class="num">${i + 1} of ${n}</span><button onclick="skipTag()">Skip</button></div>`;
   }
   h += `<div class="txhead">${avHtml(x, 'lg')}<div class="grow"><div class="t1" style="font-size:15px">${esc(x.vendor)}</div>
-    <div class="t2">${dayLabel(x.t)}, ${time(x.t)} · ${esc(metaLine(x))}</div></div>
-    <div class="r"><div class="amt-r num lgamt" id="tgAmt">${inr(shareOf())}</div><div class="of num" id="tgOf">${pick.n !== 1 ? 'of ' + inr(pick.base) : ''}</div></div></div>`;
-  h += `<div class="lbl mt">Split</div><div class="hscroll">${splitChips(pick.n, 'tagSplit')}</div>`;
-  if (pick.n === 'c') h += shareInput('tgShare', pick.share, 'tagShare(this.value)');
-  if (pick.step === 'cat') {
-    h += `<div class="lbl mt">Pick a category</div><div class="grid">${D.cats.map(([c]) => {
-      const col = colorOf(c);
-      return `<button class="opt ${pick.cat === c ? 'on' : ''}" onclick="pickCat('${enc(c)}')"><span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(c)}</span>${esc(c)}</button>`;
-    }).join('')}<button class="opt" onclick="newCat()"><span class="oi">${svg(P.plus)}</span>New</button></div>`;
-  } else {
-    const col = colorOf(pick.cat), subs = subsOf(pick.cat);
-    h += `<button class="picked" onclick="backToCats()"><span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(pick.cat)}</span><b>${esc(pick.cat)}</b><span class="chg">Change</span></button>
-      <div class="lbl mt">Subcategory</div>
-      <div class="chips">${subs.map(s => `<button class="chip lg ${pick.sub === s ? 'on' : ''}" onclick="saveTag('${enc(s)}')">${esc(s)}</button>`).join('')}
-        <button class="chip lg add" onclick="newSub()">＋ Add</button></div>
-      <button class="btn sec2" onclick="saveTag('')">Save as ${esc(pick.cat)} only</button>`;
-  }
-  if (x.cat) h += `<button class="link" onclick="removeTag()">Remove tag</button>`;
+      <div class="t2">${dayLabel(x.t)}, ${time(x.t)} · ${esc(metaLine(x))}</div></div>
+      <div class="r"><div class="amt-r num lgamt" id="tgAmt">${inr(shareOf())}</div><div class="of num" id="tgOf">${pick.n !== 1 ? 'of ' + inr(pick.base) : ''}</div></div></div>
+    <div class="lbl pl">Split</div>
+    <div class="hscroll" id="tgSplit">${splitRowHtml(pick.n, 'tagSplit', pick.share, 'tgShare', 'tagShare(this.value)')}</div>
+    <div class="stage" style="margin-top:14px"><div class="track ${pick.step === 'sub' ? 'sub' : ''}" id="track">
+      <div class="pane scrl" id="paneCat">${catPaneHtml(x)}</div>
+      <div class="pane scrl" id="paneSub">${pick.step === 'sub' ? subPaneHtml() : ''}</div>
+    </div></div>`;
   $('sb').innerHTML = `<div class="${anim ? 'swap' : ''}">${h}</div>`;
   $('panel').scrollTop = 0;
+}
+function catPaneHtml(x) {
+  const last = pick.last && pick.last.cat;
+  return `<div class="grid">${D.cats.map(([c]) => {
+      const col = colorOf(c);
+      return `<button class="opt ${pick.cat === c ? 'on' : ''}" onclick="pickCat('${enc(c)}',this)">${last === c ? '<em class="lastb">LAST</em>' : ''}<span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(c)}</span>${esc(c)}</button>`;
+    }).join('')}
+    <button class="opt" onclick="newCat()"><span class="oi">${svg(P.plus)}</span>New</button>
+    ${x.cat ? `<button class="opt" onclick="removeTag()"><span class="oi" style="color:var(--red)">${svg(P.x)}</span>Untag</button>` : ''}</div>`;
+}
+function subPaneHtml() {
+  const col = colorOf(pick.cat), subs = subsOf(pick.cat);
+  const lastSub = pick.last && pick.last.cat === pick.cat ? pick.last.sub : null;
+  return `<button class="back" onclick="backToCats()">${svg(P.chevL)}<span class="oi sm" style="color:${col};background:${tint(col, .13)}">${catIcon(pick.cat)}</span><b>${esc(pick.cat)}</b></button>
+    <div class="sgrid">${subs.map(s => `<button class="sopt ${pick.sub === s ? 'on' : ''}" onclick="pickSub('${enc(s)}',this)">${lastSub === s ? '<em class="lastb">LAST</em>' : ''}${esc(s)}</button>`).join('')}
+      <button class="sopt add" onclick="newSub()">＋ Add</button></div>
+    <button class="btn sec2" onclick="pickSub('',this)">Just ${esc(pick.cat)}</button>`;
+}
+function showSub() {
+  pick.step = 'sub';
+  const p = $('paneSub'); p.innerHTML = subPaneHtml(); p.scrollTop = 0;
+  requestAnimationFrame(() => $('track').classList.add('sub'));
+}
+function backToCats() {
+  if (!pick) return;
+  pick.step = 'cat';
+  const t = $('track'); if (t) t.classList.remove('sub');
 }
 function tagSplit(n) {
   if (n === 'c' && pick.n !== 'c') pick.share = '';
   pick.n = n;
-  drawTag(false);
-  if (n === 'c') { const i = $('tgShare'); if (i) i.focus(); }
+  const row = $('tgSplit'), keep = row.scrollLeft;
+  row.innerHTML = splitRowHtml(pick.n, 'tagSplit', pick.share, 'tgShare', 'tagShare(this.value)');
+  row.scrollLeft = keep;
+  updTagAmt();
+  if (n === 'c') revealCustom('tgShare');
 }
-function tagShare(v) {
-  pick.share = v;
-  $('tgAmt').textContent = inr(Number(v) || 0);
-  $('tgOf').textContent = 'of ' + inr(pick.base);
+function tagShare(v) { pick.share = v; updTagAmt(); }
+function updTagAmt() {
+  $('tgAmt').textContent = inr(shareOf());
+  $('tgOf').textContent = pick.n !== 1 ? 'of ' + inr(pick.base) : '';
 }
-function backToCats() { pick.step = 'cat'; drawTag(true); }
-function pickCat(e) {
+function pickCat(e, el) {
+  if (pick.saving) return;
   pick.cat = dec(e); pick.sub = '';
-  if (!subsOf(pick.cat).length) return saveTag('');
-  pick.step = 'sub'; drawTag(true);
+  document.querySelectorAll('#paneCat .opt').forEach(b => b.classList.toggle('on', b === el));
+  if (!subsOf(pick.cat).length) { pick.saving = true; setTimeout(() => saveTag(''), 150); return; }
+  showSub();
+}
+function pickSub(e, el) {
+  if (pick.saving) return;
+  pick.saving = true;
+  document.querySelectorAll('#paneSub .sopt').forEach(b => b.classList.toggle('on', b === el));
+  setTimeout(() => saveTag(e), 150);
 }
 function newCat() {
   const c = (prompt('New category') || '').trim(); if (!c) return;
   if (!D.cats.some(k => k[0] === c)) D.cats.push([c, []]);
-  pick.cat = c; pick.sub = ''; pick.step = 'sub'; drawTag(true);
+  pick.cat = c; pick.sub = '';
+  $('paneCat').innerHTML = catPaneHtml(byId(pick.id));
+  showSub();
 }
 function newSub() {
   const s = (prompt('New subcategory for ' + pick.cat) || '').trim(); if (!s) return;
@@ -635,8 +705,10 @@ function saveTag(e) {
   const x = byId(pick.id); if (!x) return;
   const share = r2(shareOf());
   if (pick.n === 'c' && !(share > 0 && share <= pick.base)) {
+    pick.saving = false;
+    document.querySelectorAll('#paneCat .opt.on, #paneSub .sopt.on').forEach(b => { if (!b.closest('#paneSub') || pick.step === 'sub') {} });
     toast('Enter your share (up to ' + inr(pick.base) + ')');
-    const i = $('tgShare'); if (i) i.focus();
+    revealCustom('tgShare');
     return;
   }
   const isSplit = pick.n !== 1 && share !== pick.base;
@@ -648,9 +720,7 @@ function saveTag(e) {
   render(false);
   mutate('tag', { id: x.id, cat, sub, split }).then(r => {
     (r.alsoTagged || []).forEach(i => { const y = byId(i); if (y) Object.assign(y, { cat, sub, by: 'auto' }); });
-    if (r.learned) toast(`Learned: ${x.vendor} → ${cat}`);
-    else if (cat && !inQueue) toast(isSplit ? `Tagged · your share ${inr(share)}` : 'Tagged');
-    if (sheetOn && pick && pick.queue && (r.alsoTagged || []).includes(pick.id)) advance();
+    if (cat && !inQueue) toast(isSplit ? `Tagged · your share ${inr(share)}` : 'Tagged ' + cat + (sub ? ' › ' + sub : ''));
     persist(); render(false);
   }).catch(err => { Object.assign(x, old); render(false); toast("Couldn't save: " + err.message); });
 }
@@ -718,8 +788,8 @@ function openAdd() {
     <div class="lbl c">Log a spend</div>
     <input id="a_amt" class="big num" type="number" inputmode="decimal" placeholder="₹0" oninput="addShareUpd()">
     <label>Split</label>
-    <div class="hscroll" id="a_sp">${splitChips(1, 'addSplit')}</div>
-    <div id="a_spx"></div>
+    <div class="hscroll" id="a_sp">${splitRowHtml(1, 'addSplit', '', 'a_share', 'addShareUpd()')}</div>
+    <div class="spnote" id="a_spx">Just you · full amount</div>
     <label>What / where</label><input id="a_v" placeholder="Chai, auto, vegetables…">
     <label>Paid with</label>
     <div class="chips" id="a_m">${['Cash', 'UPI', 'Card', 'Other'].map(m => `<button class="chip ${m === 'Cash' ? 'on' : ''}" onclick="addSet('${m}',this)">${m}</button>`).join('')}</div>
@@ -733,15 +803,18 @@ function openAdd() {
 }
 function addSplit(n) {
   add.n = n;
-  $('a_sp').innerHTML = splitChips(n, 'addSplit');
-  $('a_spx').innerHTML = n === 'c' ? shareInput('a_share', '', '') : n !== 1 ? '<div class="spnote">Your share <b class="num" id="a_shr"></b></div>' : '';
+  const row = $('a_sp'), keep = row.scrollLeft;
+  row.innerHTML = splitRowHtml(n, 'addSplit', '', 'a_share', 'addShareUpd()');
+  row.scrollLeft = keep;
   addShareUpd();
-  if (n === 'c') $('a_share').focus();
+  if (n === 'c') revealCustom('a_share');
 }
 function addShareUpd() {
-  const el = $('a_shr'); if (!el || typeof add.n !== 'number') return;
-  const a = parseFloat($('a_amt').value) || 0;
-  el.textContent = inr(a / add.n) + ' of ' + inr(a);
+  const el = $('a_spx'); if (!el) return;
+  const total = parseFloat($('a_amt').value) || 0;
+  if (add.n === 1) { el.innerHTML = 'Just you · full amount'; return; }
+  const share = add.n === 'c' ? (parseFloat(($('a_share') || {}).value) || 0) : total / add.n;
+  el.innerHTML = `Your share <b class="num">${inr(share)}</b> of ${inr(total)}`;
 }
 function addSet(m, b) { add.method = m; b.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b)); }
 function addCat(e) {
@@ -757,7 +830,7 @@ function addTx() {
   let share = total;
   if (add.n === 'c') {
     share = r2(parseFloat($('a_share').value) || 0);
-    if (!(share > 0 && share <= total)) { $('a_share').focus(); return toast('Enter your share (up to ' + inr(total) + ')'); }
+    if (!(share > 0 && share <= total)) { revealCustom('a_share'); return toast('Enter your share (up to ' + inr(total) + ')'); }
   } else if (add.n !== 1) share = r2(total / add.n);
   const isSplit = share !== total;
   const t = new Date($('a_t').value).getTime() || Date.now();
@@ -770,25 +843,26 @@ function addTx() {
     .catch(e => { D.tx = D.tx.filter(x => x !== tmp); render(false); toast("Couldn't add: " + e.message); });
 }
 
-/* ---------- MANAGE CATEGORIES ---------- */
-function openCats() { drawCats(); openSheet(undefined, 'cats'); }
-function drawCats() {
+/* ---------- MANAGE CATEGORIES (tall sheet: fixed header, scrolling list, fixed button) ---------- */
+function openCats() { drawCats(true); openSheet(undefined, 'cats'); }
+function drawCats(fresh) {
+  const keep = !fresh && $('mlist') ? $('mlist').scrollTop : 0;
   const cnt = c => D.tx.filter(x => x.cat === c).length;
-  $('sb').innerHTML = `<div class="lbl c">Categories</div>
-    <div class="t2 wrap" style="text-align:center;margin:6px 0 12px">Renames update past spends too</div>
-    <div class="card list" style="margin:0">${D.cats.map(([c, subs]) => {
+  $('sb').innerHTML = `<div class="mhead"><h3>Categories</h3><div class="t2">Tap to edit · renames update past spends too</div></div>
+    <div class="mlist scrl" id="mlist">${D.cats.map(([c, subs]) => {
       const col = colorOf(c), on = mcOpen === c, fixed = c === D.notSpend, n = cnt(c);
       return `<div class="mc"><button class="mrow" onclick="toggleMc('${enc(c)}')"><span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(c)}</span>
-        <div class="grow"><div class="t1">${esc(c)}</div><div class="t2">${subs.length} sub${subs.length === 1 ? '' : 's'} · ${n} spend${n === 1 ? '' : 's'}</div></div>${svg(P.chevR, 'ic sm' + (on ? ' on' : ''))}</button>
+        <div class="grow"><div class="mname">${esc(c)}</div><div class="mmeta">${subs.length} sub${subs.length === 1 ? '' : 's'} · ${n} spend${n === 1 ? '' : 's'}</div></div>${svg(P.chevR, 'ic' + (on ? ' on' : ''))}</button>
         ${on ? `<div class="mbody">
-          ${fixed ? '<div class="t2" style="margin-bottom:8px">Built-in · kept out of totals</div>'
-                  : `<div class="macts"><button class="chip sm" onclick="catRename('${enc(c)}')">Rename</button><button class="chip sm red" onclick="catDelete('${enc(c)}')">Delete</button></div>`}
+          ${fixed ? '<div class="fixed-note">Built-in · kept out of totals</div>'
+                  : `<div class="macts"><button class="chip" onclick="catRename('${enc(c)}')">Rename</button><button class="chip red" onclick="catDelete('${enc(c)}')">Delete</button></div>`}
           ${subs.map(s => `<div class="msub"><span>${esc(s)}</span>
             <button class="mini" onclick="subRename('${enc(c)}','${enc(s)}')" aria-label="Rename">${svg(P.edit)}</button>
             <button class="mini red" onclick="subDelete('${enc(c)}','${enc(s)}')" aria-label="Delete">${svg(P.trash)}</button></div>`).join('')}
-          <button class="chip sm add" onclick="subAdd('${enc(c)}')">＋ Add subcategory</button></div>` : ''}</div>`;
+          <button class="addsub" onclick="subAdd('${enc(c)}')">＋ Add subcategory</button></div>` : ''}</div>`;
     }).join('')}</div>
-    <button class="btn" onclick="catAdd()">＋ New category</button>`;
+    <div class="mfoot"><button class="btn" onclick="catAdd()">＋ New category</button></div>`;
+  $('mlist').scrollTop = keep;
 }
 function toggleMc(e) { const c = dec(e); mcOpen = mcOpen === c ? null : c; drawCats(); }
 const ask = (msg, def) => { const v = prompt(msg, def || ''); return v === null ? '' : v.trim(); };
@@ -796,6 +870,7 @@ function catAdd() {
   const c = ask('New category'); if (!c) return;
   if (c === D.notSpend || D.cats.some(k => k[0].toLowerCase() === c.toLowerCase())) return toast('Already exists');
   mcOpen = c; catOp({ type: 'addCat', cat: c }, 'Added ' + c);
+  requestAnimationFrame(() => { const l = $('mlist'); if (l) l.scrollTo({ top: l.scrollHeight, behavior: 'smooth' }); });
 }
 function catRename(e) {
   const c = dec(e), to = ask('Rename ' + c, c); if (!to || to === c) return;
@@ -968,10 +1043,11 @@ function calendar(daily, isCur, upto) {
 
 /* ---------- sheet ---------- */
 function openSheet(html, kind) {
-  const s = $('sheet');
+  const s = $('sheet'), p = $('panel');
   sheetKind = kind || '';
+  p.classList.toggle('tall', sheetKind === 'cats');
   if (html !== undefined) $('sb').innerHTML = html;
-  $('panel').scrollTop = 0;
+  p.scrollTop = 0;
   if (sheetOn) return;
   sheetOn = true; clearTimeout(s._t);
   s.classList.add('on'); void s.offsetWidth; s.classList.add('open');
@@ -989,19 +1065,27 @@ function closeSheet() {
   const sheet = $('sheet'), panel = $('panel');
   sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
   sheet.addEventListener('touchmove', e => { if (e.target === sheet) e.preventDefault(); }, { passive: false });
-  let sy = null, dragging = false;
-  panel.addEventListener('touchstart', e => { sy = (panel.scrollTop <= 0 && !e.target.closest('.hscroll,input')) ? e.touches[0].clientY : null; dragging = false; }, { passive: true });
+  let sy = null, sx0 = 0, sy0 = 0, hz = false, dragging = false;
+  panel.addEventListener('touchstart', e => {
+    const t = e.touches[0], sc = e.target.closest('.scrl'), skip = !!e.target.closest('.hscroll,input');
+    const atTop = panel.scrollTop <= 0 && (!sc || sc.scrollTop <= 0);
+    sx0 = t.clientX; sy0 = t.clientY; hz = !skip;
+    sy = atTop && !skip ? t.clientY : null; dragging = false;
+  }, { passive: true });
   panel.addEventListener('touchmove', e => {
     if (sy === null) return;
-    const d = e.touches[0].clientY - sy;
+    const t = e.touches[0], d = t.clientY - sy;
+    if (!dragging && Math.abs(t.clientX - sx0) > Math.abs(d)) { sy = null; return; }  // horizontal gesture, not a close-drag
     if (d > 6) { if (!dragging) { dragging = true; panel.classList.add('drag'); } panel.style.transform = `translateY(${d - 6}px)`; }
     else if (dragging) panel.style.transform = 'translateY(0)';
   }, { passive: true });
   panel.addEventListener('touchend', e => {
+    const t = e.changedTouches[0], dx = t.clientX - sx0, dy = t.clientY - sy0;
+    if (hz && !dragging && sheetKind === 'tag' && pick && pick.step === 'sub' && dx > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) backToCats();
     if (sy === null) return;
-    const d = e.changedTouches[0].clientY - sy; sy = null; panel.classList.remove('drag');
+    sy = null; panel.classList.remove('drag');
     if (!dragging) return; dragging = false;
-    if (d > 100) closeSheet(); else panel.style.transform = '';
+    if (dy > 100) closeSheet(); else panel.style.transform = '';
   });
 
   const ptr = $('ptr'); let py = null, px = 0;
@@ -1030,9 +1114,9 @@ function closeSheet() {
   }, { passive: true });
 })();
 
-/* ---------- home-screen icon: ₹ engraved into a black block, optically centred ---------- */
+/* ---------- home-screen icon: lighter ₹ engraved into a black block, 1024px for crisp edges ---------- */
 function makeIcon() {
-  const S = 180, FONT = '800 118px "Plus Jakarta Sans", -apple-system, sans-serif';
+  const S = 1024, FONT = '500 640px "Plus Jakarta Sans", -apple-system, sans-serif';
   const mk = () => { const k = document.createElement('canvas'); k.width = k.height = S; const t = k.getContext('2d'); t.font = FONT; t.textAlign = 'left'; t.textBaseline = 'alphabetic'; return [k, t]; };
   const [c, g] = mk();
   const bg = g.createLinearGradient(0, 0, 0, S); bg.addColorStop(0, '#17171a'); bg.addColorStop(1, '#050506');
@@ -1040,28 +1124,28 @@ function makeIcon() {
 
   const m = g.measureText('₹');
   const L = m.actualBoundingBoxLeft || 0, R = m.actualBoundingBoxRight || m.width;
-  const A = m.actualBoundingBoxAscent || 84, Dn = m.actualBoundingBoxDescent || 0;
+  const A = m.actualBoundingBoxAscent || 460, Dn = m.actualBoundingBoxDescent || 0;
   const x = S / 2 + (L - R) / 2, y = S / 2 + (A - Dn) / 2;
 
   // light catching the lower lip of the cut
-  g.fillStyle = 'rgba(255,255,255,.11)'; g.fillText('₹', x, y + 2);
+  g.fillStyle = 'rgba(255,255,255,.10)'; g.fillText('₹', x, y + 7);
 
-  // the cut: green floor, darker toward the top edge
+  // floor of the cut: green, darker toward the top wall
   const [fill, f] = mk();
-  const gr = f.createLinearGradient(0, y - A, 0, y + Dn); gr.addColorStop(0, '#1d8f52'); gr.addColorStop(1, '#3ddc84');
+  const gr = f.createLinearGradient(0, y - A, 0, y + Dn); gr.addColorStop(0, '#22a862'); gr.addColorStop(1, '#3ddc84');
   f.fillStyle = gr; f.fillText('₹', x, y);
 
-  // inner shadow from the top wall of the cut
+  // inner shadow from the top wall
   const [hole, h] = mk();
   h.fillStyle = '#000'; h.fillRect(0, 0, S, S); h.globalCompositeOperation = 'destination-out'; h.fillText('₹', x, y);
   f.globalCompositeOperation = 'source-atop';
-  f.shadowColor = 'rgba(0,0,0,.9)'; f.shadowBlur = 7; f.shadowOffsetY = 5;
+  f.shadowColor = 'rgba(0,0,0,.85)'; f.shadowBlur = 22; f.shadowOffsetY = 14;
   f.drawImage(hole, 0, 0);
 
   g.drawImage(fill, 0, 0);
   $('touchicon').href = c.toDataURL('image/png');
 }
-(document.fonts ? document.fonts.load('800 118px "Plus Jakarta Sans"', '₹').catch(() => {}) : Promise.resolve()).then(makeIcon);
+(document.fonts ? document.fonts.load('500 640px "Plus Jakarta Sans"', '₹').catch(() => {}) : Promise.resolve()).then(makeIcon);
 
 /* ---------- boot ---------- */
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });

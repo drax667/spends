@@ -1114,38 +1114,37 @@ function closeSheet() {
   }, { passive: true });
 })();
 
-/* ---------- home-screen icon: lighter ₹ engraved into a black block, 1024px for crisp edges ---------- */
+/* ---------- home-screen icon: flat red ₹ on black, two-tone fold ---------- */
 function makeIcon() {
-  const S = 1024, FONT = '500 640px "Plus Jakarta Sans", -apple-system, sans-serif';
+  const S = 1024, FONT = '400 660px "Plus Jakarta Sans", -apple-system, sans-serif';
+  const RED = '#f2553c', RED_DARK = '#c7402c', BG = '#0d0d0f';
   const mk = () => { const k = document.createElement('canvas'); k.width = k.height = S; const t = k.getContext('2d'); t.font = FONT; t.textAlign = 'left'; t.textBaseline = 'alphabetic'; return [k, t]; };
-  const [c, g] = mk();
-  const bg = g.createLinearGradient(0, 0, 0, S); bg.addColorStop(0, '#17171a'); bg.addColorStop(1, '#050506');
-  g.fillStyle = bg; g.fillRect(0, 0, S, S);
 
+  const [c, g] = mk();
+  g.fillStyle = BG; g.fillRect(0, 0, S, S);
+
+  // optically centre the glyph using its real shape
   const m = g.measureText('₹');
   const L = m.actualBoundingBoxLeft || 0, R = m.actualBoundingBoxRight || m.width;
-  const A = m.actualBoundingBoxAscent || 460, Dn = m.actualBoundingBoxDescent || 0;
+  const A = m.actualBoundingBoxAscent || 470, Dn = m.actualBoundingBoxDescent || 0;
   const x = S / 2 + (L - R) / 2, y = S / 2 + (A - Dn) / 2;
+  const left = x - L, right = x + R, top = y - A, bottom = y + Dn;
 
-  // light catching the lower lip of the cut
-  g.fillStyle = 'rgba(255,255,255,.10)'; g.fillText('₹', x, y + 7);
+  // ₹ in flat red, with a darker diagonal fold across its lower-right half
+  const [k, t] = mk();
+  t.fillStyle = RED; t.fillText('₹', x, y);
+  t.globalCompositeOperation = 'source-atop';
+  t.fillStyle = RED_DARK;
+  t.beginPath();
+  t.moveTo(left - 60, bottom + 60);
+  t.lineTo(right + 60, bottom + 60);
+  t.lineTo(right + 60, top + (bottom - top) * 0.42);
+  t.closePath(); t.fill();
 
-  // floor of the cut: green, darker toward the top wall
-  const [fill, f] = mk();
-  const gr = f.createLinearGradient(0, y - A, 0, y + Dn); gr.addColorStop(0, '#22a862'); gr.addColorStop(1, '#3ddc84');
-  f.fillStyle = gr; f.fillText('₹', x, y);
-
-  // inner shadow from the top wall
-  const [hole, h] = mk();
-  h.fillStyle = '#000'; h.fillRect(0, 0, S, S); h.globalCompositeOperation = 'destination-out'; h.fillText('₹', x, y);
-  f.globalCompositeOperation = 'source-atop';
-  f.shadowColor = 'rgba(0,0,0,.85)'; f.shadowBlur = 22; f.shadowOffsetY = 14;
-  f.drawImage(hole, 0, 0);
-
-  g.drawImage(fill, 0, 0);
+  g.drawImage(k, 0, 0);
   $('touchicon').href = c.toDataURL('image/png');
 }
-(document.fonts ? document.fonts.load('500 640px "Plus Jakarta Sans"', '₹').catch(() => {}) : Promise.resolve()).then(makeIcon);
+(document.fonts ? document.fonts.load('400 660px "Plus Jakarta Sans"', '₹').catch(() => {}) : Promise.resolve()).then(makeIcon);
 
 /* ---------- boot ---------- */
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });

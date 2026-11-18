@@ -32,6 +32,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .top{position:sticky;top:0;z-index:6;display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 -16px;padding:calc(var(--sat) + 10px) 18px 12px;
   background:rgba(10,10,11,.84);-webkit-backdrop-filter:saturate(1.6) blur(20px);backdrop-filter:saturate(1.6) blur(20px)}
 .top h1{font-size:22px;font-weight:800;letter-spacing:-.035em}
+.hd-r{display:flex;align-items:center;gap:8px}
+.iconbtn{width:36px;height:36px;border-radius:50%;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;color:var(--mute);transition:transform .14s var(--ease)}
+.iconbtn:active{transform:scale(.92)}
+.iconbtn .ic{width:18px;height:18px}
 .month{display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:2px}
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
@@ -81,6 +85,7 @@ label,.lbl.mt{margin:18px 2px 9px}
 .t2{font-size:11.5px;color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
 .t2.wrap{white-space:normal}
 .amt-r{font-weight:800;text-align:right;white-space:nowrap;letter-spacing:-.02em;font-size:13.5px}
+.of{font-size:10.5px;color:var(--mute);font-weight:600;text-align:right;white-space:nowrap;margin-top:1px}
 .r{text-align:right}
 .tagbtn{position:relative;display:inline-block;margin-top:5px;font-size:10px;font-weight:800;letter-spacing:.07em;color:var(--acc);border:1px solid var(--accLine);background:var(--accBg);padding:5px 12px;border-radius:999px}
 .badge-auto{display:inline-block;font-size:8.5px;font-weight:800;color:var(--amber);border:1px solid rgba(246,185,69,.3);border-radius:5px;padding:0 4px;margin-left:5px;letter-spacing:.04em;vertical-align:1px}
@@ -92,9 +97,6 @@ label,.lbl.mt{margin:18px 2px 9px}
 .subs{padding:2px 0 10px 52px;animation:fadeUp .25s var(--ease) both}
 .subs .s{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--mute);padding:4px 0;font-weight:600}
 .subs .s b{color:var(--ink);font-weight:700}
-.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:3px;margin-bottom:12px}
-.seg button{flex:1;padding:9px;min-height:38px;border-radius:11px;font-size:12.5px;font-weight:700;color:var(--mute);text-align:center;transition:background .2s,color .2s,transform .14s var(--ease)}
-.seg button.on{background:var(--card2);color:var(--ink)}
 .day{font-size:11.5px;color:var(--mute);font-weight:700;margin:16px 4px 8px;display:flex;justify-content:space-between}
 .searchbox{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 12px;color:var(--mute);transition:border-color .2s}
 .searchbox:focus-within{border-color:var(--acc)}
@@ -129,7 +131,7 @@ nav .fab .ic{stroke-width:2.4}
 .qbar span{font-size:11px;color:var(--mute);font-weight:700}
 .qbar button{font-size:12px;font-weight:800;color:var(--acc);padding:6px 2px}
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.opt{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 4px 10px;min-height:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:11.5px;font-weight:700;text-align:center}
+.opt{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 4px 10px;min-height:80px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:11.5px;font-weight:700;text-align:center}
 .opt.on{border-color:var(--acc);background:var(--accBg)}
 .picked{display:flex;align-items:center;gap:12px;width:100%;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:9px 14px 9px 9px;margin-top:16px;text-align:left}
 .picked b{flex:1;font-size:14px;font-weight:800}
@@ -137,6 +139,9 @@ nav .fab .ic{stroke-width:2.4}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:9px 14px;min-height:38px;font-size:12.5px;font-weight:700}
 .chip.lg{padding:12px 17px;font-size:13.5px;min-height:46px}
+.chip.sm{padding:6px 12px;min-height:32px;font-size:12px}
+.chip.red{color:var(--red)}
+.chip.sc{flex:none;min-width:52px;text-align:center;font-weight:800}
 .chip.on,.cchip.on{border-color:var(--acc);background:var(--accBg);color:var(--acc)}
 .chip.add{color:var(--mute);border-style:dashed}
 .hscroll{display:flex;gap:8px;overflow-x:auto;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
@@ -145,11 +150,18 @@ nav .fab .ic{stroke-width:2.4}
 input{width:100%;min-height:46px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:11px 13px;color:var(--ink);font:600 16px "Plus Jakarta Sans",-apple-system,sans-serif;transition:border-color .2s}
 input:focus{outline:none;border-color:var(--acc)}
 input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-top:10px;letter-spacing:-.04em;min-height:72px}
+.share{display:flex;align-items:center;gap:6px;margin-top:10px;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:2px 4px 2px 14px;transition:border-color .2s}
+.share:focus-within{border-color:var(--acc)}
+.share span{color:var(--mute);font-weight:700;font-size:12px;white-space:nowrap}
+.share input{border:0;background:none;min-height:44px;text-align:right;font-weight:800;font-size:18px;padding:8px 10px}
+.spnote{margin-top:10px;font-size:12px;color:var(--mute);font-weight:600}
+.spnote b{color:var(--acc);font-weight:800}
 .btn{display:block;width:100%;margin-top:16px;padding:14px;min-height:50px;border-radius:16px;background:var(--acc);color:var(--accInk);font-size:14px;font-weight:800;text-align:center}
 .btn.sec2{background:var(--card2);color:var(--ink);border:1px solid var(--line);margin-top:12px}
 .btn.danger{background:none;color:var(--red);border:1px solid var(--line);margin-top:10px}
 .btn.sm{display:inline-block;width:auto;padding:10px 20px;min-height:0;margin-top:14px}
 .link{display:block;width:100%;text-align:center;margin-top:12px;padding:8px;color:var(--mute);font-size:12px;font-weight:700}
+.link.acc{color:var(--acc)}
 .txc{text-align:center;padding:4px 0 2px}
 .txc .v{font-size:16px;font-weight:800;letter-spacing:-.02em}
 .txc .a{font-size:32px;font-weight:800;letter-spacing:-.045em;margin:2px 0}
@@ -158,6 +170,18 @@ input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-t
 .dayamt{font-size:28px;font-weight:800;letter-spacing:-.04em;margin:2px 0 12px}
 .setup{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:30px 20px;margin-top:20px}
 .setup h2{font-size:17px;font-weight:800}
+.mc+.mc{border-top:1px solid var(--line)}
+.mrow{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;text-align:left}
+.mrow>.ic{color:var(--dim);transition:transform .2s var(--ease)}
+.mrow>.ic.on{transform:rotate(90deg)}
+.mbody{padding:0 0 12px 48px;animation:fadeUp .25s var(--ease) both}
+.macts{display:flex;gap:8px;margin:0 0 8px}
+.msub{display:flex;align-items:center;gap:6px;padding:3px 0;font-weight:600;font-size:12.5px}
+.msub span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;color:var(--mute);background:var(--card2);flex:none}
+.mini.red{color:var(--red)}
+.mini .ic{width:15px;height:15px}
+.mbody .chip.add{margin-top:6px}
 .bigamt{font-size:30px;font-weight:800;letter-spacing:-.045em;margin-top:2px}
 .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
 .kpis>div{background:var(--card2);border-radius:14px;padding:10px 11px;min-width:0}
@@ -209,8 +233,8 @@ input.big{font-size:34px;font-weight:800;text-align:center;padding:14px;margin-t
 .toast{position:fixed;left:50%;bottom:calc(96px + var(--sab));transform:translate(-50%,12px);background:#f4f4f6;color:#0b0b0c;padding:10px 15px;border-radius:14px;font-size:12.5px;font-weight:700;
   opacity:0;transition:opacity .22s,transform .3s var(--ease);pointer-events:none;z-index:30;max-width:88%;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.opt,.chip,.cchip,.btn,.tagbtn,.month button,.nudge,.cell,.insc,.picked{transition:transform .14s var(--ease),border-color .2s,background .2s}
-.opt:active,.chip:active,.cchip:active,.btn:active,.tagbtn:active,nav button:active,.month button:active,.nudge:active,.cell:active,.insc:active,.picked:active,.seg button:active{transform:scale(.96)}
+.opt,.chip,.cchip,.btn,.tagbtn,.month button,.nudge,.cell,.insc,.picked,.mini{transition:transform .14s var(--ease),border-color .2s,background .2s}
+.opt:active,.chip:active,.cchip:active,.btn:active,.tagbtn:active,nav button:active,.month button:active,.nudge:active,.cell:active,.insc:active,.picked:active,.mini:active{transform:scale(.96)}
 nav .fab:active{transform:scale(.92)}
 .enter>*{animation:fadeUp .42s var(--ease) both}
 .enter>*:nth-child(2){animation-delay:.04s}.enter>*:nth-child(3){animation-delay:.08s}.enter>*:nth-child(4){animation-delay:.12s}
@@ -223,10 +247,13 @@ nav .fab:active{transform:scale(.92)}
 <div class="lbar" id="lbar"><i></i></div>
 <header class="top">
   <h1 id="title">Spends</h1>
-  <div class="month">
-    <button onclick="shiftMonth(-1)" aria-label="Previous month"><svg viewBox="0 0 24 24" class="ic sm"><path d="m15 6-6 6 6 6"/></svg></button>
-    <span id="mlabel"></span>
-    <button id="mnext" onclick="shiftMonth(1)" aria-label="Next month"><svg viewBox="0 0 24 24" class="ic sm"><path d="m9 6 6 6-6 6"/></svg></button>
+  <div class="hd-r">
+    <button class="iconbtn" onclick="openCats()" aria-label="Manage categories"><svg viewBox="0 0 24 24" class="ic"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></svg></button>
+    <div class="month">
+      <button onclick="shiftMonth(-1)" aria-label="Previous month"><svg viewBox="0 0 24 24" class="ic sm"><path d="m15 6-6 6 6 6"/></svg></button>
+      <span id="mlabel"></span>
+      <button id="mnext" onclick="shiftMonth(1)" aria-label="Next month"><svg viewBox="0 0 24 24" class="ic sm"><path d="m9 6 6 6-6 6"/></svg></button>
+    </div>
   </div>
 </header>
 <div class="ptr" id="ptr"><svg viewBox="0 0 24 24" class="ic"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg></div>
@@ -272,6 +299,8 @@ const P = {
   leaf:'<path d="M5 19c0-8 5-13 14-14 0 9-5 14-13 14"/><path d="M5 19 13 11"/>',
   chart:'<path d="M6 20v-8M12 20V5M18 20v-5M3 20h18"/>',
   lock:'<rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="m13.5 6.5 4 4"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
 };
 const svg = (p, cls) => `<svg viewBox="0 0 24 24" class="${cls || 'ic'}">${p}</svg>`;
 const catIcon = c => svg(P[c] || (c ? P.tag : P.q));
@@ -287,7 +316,7 @@ if (qs.get('api')) store.set('spends.api', qs.get('api'));
 let KEY = qs.get('key') || store.get('spends.key') || '';
 let API = qs.get('api') || store.get('spends.api') || '';
 let D = { tx: [], cats: [], notSpend: 'Not a spend' };
-let tab = 'home', tagMode = 'untagged', q = '', open = {}, pick = null, add = null, tsel = null;
+let tab = 'home', q = '', open = {}, pick = null, add = null, tsel = null, mcOpen = null, sheetKind = '';
 let loaded = false, inflight = 0, reloadAfter = false, sheetOn = false, heroShown = 0;
 const scrollPos = {};
 const CUR = (() => { const n = new Date(); return new Date(n.getFullYear(), n.getMonth(), 1); })();
@@ -304,6 +333,7 @@ function colorOf(c) {
 }
 const tint = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
 const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const r2 = n => Math.round(n * 100) / 100;
 const kfmt = v => v >= 100000 ? (v / 100000).toFixed(1) + 'L' : v >= 1000 ? Math.round(v / 1000) + 'k' : String(Math.round(v));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const enc = s => encodeURIComponent(s).replace(/'/g, '%27');
@@ -318,6 +348,7 @@ const monthTx = m => D.tx.filter(x => sameMonth(x.t, m));
 const untaggedIn = m => monthTx(m).filter(x => !x.cat);
 const subsOf = c => (D.cats.find(k => k[0] === c) || [0, []])[1];
 const metaLine = x => [x.method, x.account].filter(Boolean).join(' · ');
+const splitTxt = x => x.paid ? (x.split && x.split !== 'custom' ? `1/${x.split} of ` : 'of ') + inr(x.paid) : '';
 const time = t => new Date(t).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
 const dayLabel = t => {
   const d = new Date(t).toDateString(), n = new Date(), y = new Date(); y.setDate(n.getDate() - 1);
@@ -352,6 +383,7 @@ async function load() {
     d.tx.sort((a, b) => b.t - a.t);
     const first = !loaded;
     D = d; loaded = true; persist(); render(first);
+    if (sheetOn && sheetKind === 'cats') drawCats();
   } catch (e) {
     if (e.code === 'unauthorised') { store.del('spends.key'); KEY = ''; return renderSetup("That secret key didn't work. Try again."); }
     if (!loaded) $('view').innerHTML = `<div class="empty">${svg(P.q, 'ic xl')}<b>Couldn't load</b><span>${esc(e.message)}</span>
@@ -411,9 +443,8 @@ function avHtml(x, cls) {
 function rowHtml(x, o = {}) {
   const tagTxt = x.cat ? esc(x.cat + (x.sub ? ' › ' + x.sub : '')) + (x.by === 'auto' ? '<span class="badge-auto">AUTO</span>' : '') : esc(metaLine(x));
   const when = (o.day ? dayLabel(x.t) + ', ' : '') + time(x.t);
-  const right = o.tag
-    ? `<div class="r"><div class="amt-r num">${inr(x.amount)}</div><span class="tagbtn">${x.cat ? 'EDIT' : 'TAG'}</span></div>`
-    : `<div class="amt-r num">${inr(x.amount)}</div>`;
+  const of = x.paid ? `<div class="of num">${splitTxt(x)}</div>` : '';
+  const right = `<div class="r"><div class="amt-r num">${inr(x.amount)}</div>${of}${o.tag ? `<span class="tagbtn">${x.cat ? 'EDIT' : 'TAG'}</span>` : ''}</div>`;
   return `<button class="row" onclick="${o.tag ? `openTagFromList('${x.id}')` : `openTx('${x.id}')`}">${avHtml(x)}
     <div class="grow"><div class="t1">${esc(x.vendor)}</div><div class="t2">${when} · ${tagTxt}</div></div>${right}</button>`;
 }
@@ -491,34 +522,45 @@ function spark(v) {
 
 /* ---------- TO TAG ---------- */
 function renderTag() {
-  const all = monthTx(month), un = all.filter(x => !x.cat), autos = all.filter(x => x.by === 'auto');
-  const other = D.tx.filter(x => !x.cat).length - un.length;
-  const list = tagMode === 'untagged' ? un : autos;
+  const un = untaggedIn(month), other = D.tx.filter(x => !x.cat).length - un.length;
   const mName = month.toLocaleString('en-IN', { month: 'long' });
-  let h = `<div class="seg"><button class="${tagMode === 'untagged' ? 'on' : ''}" onclick="setTagMode('untagged')">Untagged · ${un.length}</button>
-    <button class="${tagMode === 'auto' ? 'on' : ''}" onclick="setTagMode('auto')">Auto-tagged · ${autos.length}</button></div>`;
-  if (tagMode === 'untagged' && un.length) h += `<button class="nudge" onclick="startQueue()"><div class="av">${svg(P.bolt)}</div>
+  let h = '';
+  if (un.length) h += `<button class="nudge" onclick="startQueue()"><div class="av">${svg(P.bolt)}</div>
     <div class="grow"><b>Tag all ${un.length} in a row</b><span>${inr(sum(un))} unaccounted in ${mName}</span></div>${svg(P.chevR, 'ic sm')}</button>`;
-  h += list.length
-    ? `<div class="card list">${list.map(x => rowHtml(x, { tag: true, day: true })).join('')}</div>`
-    : `<div class="empty">${svg(tagMode === 'untagged' ? P.check : P.spark, 'ic xl')}<b>${tagMode === 'untagged' ? `All tagged for ${mName}` : 'Nothing auto-tagged yet'}</b>
-       <span>${tagMode === 'untagged' ? 'Nice work.' : 'Tag a vendor the same way twice and it starts.'}</span></div>`;
-  if (tagMode === 'untagged' && other > 0) h += `<button class="hint" onclick="jumpUntagged()">${other} more untagged in other months ›</button>`;
+  h += un.length
+    ? `<div class="card list">${un.map(x => rowHtml(x, { tag: true, day: true })).join('')}</div>`
+    : `<div class="empty">${svg(P.check, 'ic xl')}<b>All tagged for ${mName}</b><span>Nice work.</span></div>`;
+  if (other > 0) h += `<button class="hint" onclick="jumpUntagged()">${other} more untagged in other months ›</button>`;
   $('view').innerHTML = h;
 }
-function setTagMode(m) { tagMode = m; render(false); }
 function jumpUntagged() {
   const x = D.tx.find(t => !t.cat && !sameMonth(t.t, month)); if (!x) return;
   const d = new Date(x.t); setMonth(d.getFullYear(), d.getMonth());
 }
-function openTagFromList(id) { if (tagMode === 'untagged') openTag(id, untaggedIn(month).map(x => x.id)); else openTag(id); }
+function openTagFromList(id) { openTag(id, untaggedIn(month).map(x => x.id)); }
 function startQueue() { const ids = untaggedIn(month).map(x => x.id); if (ids.length) openTag(ids[0], ids); }
 
+/* ---------- SPLIT (shared) ---------- */
+const SPLITS = [1, 2, 3, 4, 5, 6, 'c'];
+function splitChips(cur, fn) {
+  return SPLITS.map(n => `<button class="chip sc ${cur === n ? 'on' : ''}" onclick="${fn}(${n === 'c' ? "'c'" : n})">${n === 1 ? 'Just me' : n === 'c' ? 'Custom ₹' : '÷' + n}</button>`).join('');
+}
+const shareInput = (id, val, fn) => `<div class="share"><span>Your share ₹</span><input id="${id}" class="num" type="number" inputmode="decimal" placeholder="0" value="${val || ''}" oninput="${fn}"></div>`;
+
 /* ---------- TAG SHEET ---------- */
+function initPick(id, queue) {
+  const x = byId(id);
+  const split = x.paid > 0;
+  pick = { id, cat: x.cat, sub: x.sub, step: x.cat ? 'sub' : 'cat', queue: queue || null,
+           base: split ? x.paid : x.amount,
+           n: split ? (x.split && x.split !== 'custom' ? (Number(x.split) || 'c') : 'c') : 1,
+           share: x.amount };
+  if (typeof pick.n === 'number' && !SPLITS.includes(pick.n)) pick.n = 'c';
+}
+const shareOf = () => pick.n === 1 ? pick.base : pick.n === 'c' ? (Number(pick.share) || 0) : r2(pick.base / pick.n);
 function openTag(id, queue) {
-  const x = byId(id); if (!x) return;
-  pick = { id, cat: x.cat, sub: x.sub, step: x.cat ? 'sub' : 'cat', queue: queue || null };
-  drawTag(sheetOn); openSheet();
+  if (!byId(id)) return;
+  initPick(id, queue); drawTag(sheetOn); openSheet(undefined, 'tag');
 }
 function drawTag(anim) {
   const x = byId(pick.id); if (!x) return closeSheet();
@@ -528,7 +570,10 @@ function drawTag(anim) {
     h += `<div class="qbar"><div class="qprog"><i style="width:${(i / n) * 100}%"></i></div><span class="num">${i + 1} of ${n}</span><button onclick="skipTag()">Skip</button></div>`;
   }
   h += `<div class="txhead">${avHtml(x, 'lg')}<div class="grow"><div class="t1" style="font-size:15px">${esc(x.vendor)}</div>
-    <div class="t2">${dayLabel(x.t)}, ${time(x.t)} · ${esc(metaLine(x))}</div></div><div class="amt-r num lgamt">${inr(x.amount)}</div></div>`;
+    <div class="t2">${dayLabel(x.t)}, ${time(x.t)} · ${esc(metaLine(x))}</div></div>
+    <div class="r"><div class="amt-r num lgamt" id="tgAmt">${inr(shareOf())}</div><div class="of num" id="tgOf">${pick.n !== 1 ? 'of ' + inr(pick.base) : ''}</div></div></div>`;
+  h += `<div class="lbl mt">Split</div><div class="hscroll">${splitChips(pick.n, 'tagSplit')}</div>`;
+  if (pick.n === 'c') h += shareInput('tgShare', pick.share, 'tagShare(this.value)');
   if (pick.step === 'cat') {
     h += `<div class="lbl mt">Pick a category</div><div class="grid">${D.cats.map(([c]) => {
       const col = colorOf(c);
@@ -545,6 +590,17 @@ function drawTag(anim) {
   if (x.cat) h += `<button class="link" onclick="removeTag()">Remove tag</button>`;
   $('sb').innerHTML = `<div class="${anim ? 'swap' : ''}">${h}</div>`;
   $('panel').scrollTop = 0;
+}
+function tagSplit(n) {
+  if (n === 'c' && pick.n !== 'c') pick.share = '';
+  pick.n = n;
+  drawTag(false);
+  if (n === 'c') { const i = $('tgShare'); if (i) i.focus(); }
+}
+function tagShare(v) {
+  pick.share = v;
+  $('tgAmt').textContent = inr(Number(v) || 0);
+  $('tgOf').textContent = 'of ' + inr(pick.base);
 }
 function backToCats() { pick.step = 'cat'; drawTag(true); }
 function pickCat(e) {
@@ -570,23 +626,30 @@ function nextInQueue() {
 }
 function advance() {
   const n = nextInQueue();
-  if (n) { pick = { id: n, cat: '', sub: '', step: 'cat', queue: pick.queue }; drawTag(true); return true; }
+  if (n) { initPick(n, pick.queue); drawTag(true); return true; }
   closeSheet(); return false;
 }
 function skipTag() { advance(); }
 function removeTag() { pick.cat = ''; pick.sub = ''; pick.queue = null; saveTag(''); }
 function saveTag(e) {
   const x = byId(pick.id); if (!x) return;
+  const share = r2(shareOf());
+  if (pick.n === 'c' && !(share > 0 && share <= pick.base)) {
+    toast('Enter your share (up to ' + inr(pick.base) + ')');
+    const i = $('tgShare'); if (i) i.focus();
+    return;
+  }
+  const isSplit = pick.n !== 1 && share !== pick.base;
+  const split = { amount: isSplit ? share : pick.base, paid: isSplit ? pick.base : 0, n: isSplit ? (pick.n === 'c' ? 'custom' : String(pick.n)) : '' };
   const cat = pick.cat, sub = cat ? dec(e) : '', inQueue = !!pick.queue;
-  const old = { cat: x.cat, sub: x.sub, by: x.by };
-  Object.assign(x, { cat, sub, by: cat ? 'me' : '' });
+  const old = { cat: x.cat, sub: x.sub, by: x.by, amount: x.amount, paid: x.paid, split: x.split };
+  Object.assign(x, { cat, sub, by: cat ? 'me' : '', amount: split.amount, paid: split.paid, split: split.n });
   if (inQueue) { if (!advance()) toast('All tagged ✓'); } else closeSheet();
   render(false);
-  mutate('tag', { id: x.id, cat, sub }).then(r => {
+  mutate('tag', { id: x.id, cat, sub, split }).then(r => {
     (r.alsoTagged || []).forEach(i => { const y = byId(i); if (y) Object.assign(y, { cat, sub, by: 'auto' }); });
-    if (r.learned) toast(`Learned: ${x.vendor} → ${cat}${sub ? ' › ' + sub : ''}${r.alsoTagged.length ? ` · ${r.alsoTagged.length} more tagged` : ''}`);
-    else if (r.unlearned) toast(`Stopped auto-tagging ${x.vendor}`);
-    else if (cat && !inQueue) toast('Tagged');
+    if (r.learned) toast(`Learned: ${x.vendor} → ${cat}`);
+    else if (cat && !inQueue) toast(isSplit ? `Tagged · your share ${inr(share)}` : 'Tagged');
     if (sheetOn && pick && pick.queue && (r.alsoTagged || []).includes(pick.id)) advance();
     persist(); render(false);
   }).catch(err => { Object.assign(x, old); render(false); toast("Couldn't save: " + err.message); });
@@ -615,12 +678,13 @@ function openTx(id) {
   openSheet(`<div class="swap">
     <div class="txc">${avHtml(x, 'xl')}<div class="v">${esc(x.vendor)}</div><div class="a num">${inr(x.amount)}</div>
       <div class="t2">${new Date(x.t).toLocaleString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })}</div>
-      <div class="meta">${metaLine(x) ? `<span class="tagx">${esc(metaLine(x))}</span>` : ''}<span class="tagx">${x.source === 'Manual' ? 'Added manually' : 'From SMS'}</span>${x.by === 'auto' ? '<span class="tagx" style="color:var(--amber)">Auto-tagged</span>' : ''}</div></div>
+      <div class="meta">${x.paid ? `<span class="tagx" style="color:var(--acc)">Your share · ${splitTxt(x)}</span>` : ''}${metaLine(x) ? `<span class="tagx">${esc(metaLine(x))}</span>` : ''}<span class="tagx">${x.source === 'Manual' ? 'Added manually' : 'From SMS'}</span>${x.by === 'auto' ? '<span class="tagx" style="color:var(--amber)">Auto-tagged</span>' : ''}</div></div>
     <button class="picked" onclick="openTag('${id}')">${x.cat
       ? `<span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(x.cat)}</span><b>${esc(x.cat + (x.sub ? ' › ' + x.sub : ''))}</b><span class="chg">Change</span>`
       : `<span class="oi" style="color:var(--amber);background:${tint('#f6b945', .13)}">${svg(P.tag)}</span><b>Tag this spend</b><span class="chg">Tag</span>`}</button>
+    <button class="link acc" onclick="openTag('${id}')">${x.paid ? 'Change split' : 'Split this spend'}</button>
     <label>Vendor</label><input id="e_v" value="${esc(x.vendor)}">
-    <label>Amount</label><input id="e_a" type="number" inputmode="decimal" value="${x.amount}">
+    <label>${x.paid ? 'Your share' : 'Amount'}</label><input id="e_a" type="number" inputmode="decimal" value="${x.amount}">
     <label>Note</label><input id="e_n" value="${esc(x.note)}" placeholder="Add a note">
     <button class="btn" onclick="saveTx('${id}')">Save changes</button>
     <button class="btn danger" onclick="delTx('${id}')">Delete</button></div>`);
@@ -648,11 +712,14 @@ function openDay(d) {
 
 /* ---------- ADD ---------- */
 function openAdd() {
-  add = { method: 'Cash', cat: '', sub: '' };
+  add = { method: 'Cash', cat: '', sub: '', n: 1 };
   const n = new Date(), local = new Date(n - n.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
   openSheet(`<div class="swap">
     <div class="lbl c">Log a spend</div>
-    <input id="a_amt" class="big num" type="number" inputmode="decimal" placeholder="₹0">
+    <input id="a_amt" class="big num" type="number" inputmode="decimal" placeholder="₹0" oninput="addShareUpd()">
+    <label>Split</label>
+    <div class="hscroll" id="a_sp">${splitChips(1, 'addSplit')}</div>
+    <div id="a_spx"></div>
     <label>What / where</label><input id="a_v" placeholder="Chai, auto, vegetables…">
     <label>Paid with</label>
     <div class="chips" id="a_m">${['Cash', 'UPI', 'Card', 'Other'].map(m => `<button class="chip ${m === 'Cash' ? 'on' : ''}" onclick="addSet('${m}',this)">${m}</button>`).join('')}</div>
@@ -664,6 +731,18 @@ function openAdd() {
     <button class="btn" onclick="addTx()">Add spend</button></div>`);
   $('a_amt').focus();
 }
+function addSplit(n) {
+  add.n = n;
+  $('a_sp').innerHTML = splitChips(n, 'addSplit');
+  $('a_spx').innerHTML = n === 'c' ? shareInput('a_share', '', '') : n !== 1 ? '<div class="spnote">Your share <b class="num" id="a_shr"></b></div>' : '';
+  addShareUpd();
+  if (n === 'c') $('a_share').focus();
+}
+function addShareUpd() {
+  const el = $('a_shr'); if (!el || typeof add.n !== 'number') return;
+  const a = parseFloat($('a_amt').value) || 0;
+  el.textContent = inr(a / add.n) + ' of ' + inr(a);
+}
 function addSet(m, b) { add.method = m; b.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b)); }
 function addCat(e) {
   const c = dec(e); add.cat = add.cat === c ? '' : c; add.sub = '';
@@ -673,14 +752,97 @@ function addCat(e) {
 }
 function addSub(e, b) { const s = dec(e); add.sub = add.sub === s ? '' : s; b.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === b && add.sub === s)); }
 function addTx() {
-  const amount = parseFloat($('a_amt').value);
-  if (!(amount > 0)) { $('a_amt').focus(); return toast('Enter an amount'); }
+  const total = parseFloat($('a_amt').value);
+  if (!(total > 0)) { $('a_amt').focus(); return toast('Enter an amount'); }
+  let share = total;
+  if (add.n === 'c') {
+    share = r2(parseFloat($('a_share').value) || 0);
+    if (!(share > 0 && share <= total)) { $('a_share').focus(); return toast('Enter your share (up to ' + inr(total) + ')'); }
+  } else if (add.n !== 1) share = r2(total / add.n);
+  const isSplit = share !== total;
   const t = new Date($('a_t').value).getTime() || Date.now();
-  const o = { amount, vendor: $('a_v').value.trim() || 'Cash spend', method: add.method, cat: add.cat, sub: add.sub, note: $('a_n').value.trim(), t };
+  const o = { amount: share, paid: isSplit ? total : 0, split: isSplit ? (add.n === 'c' ? 'custom' : String(add.n)) : '',
+              vendor: $('a_v').value.trim() || 'Cash spend', method: add.method, cat: add.cat, sub: add.sub, note: $('a_n').value.trim(), t };
   const tmp = Object.assign({ id: 'tmp' + Date.now(), account: '', by: o.cat ? 'me' : '', source: 'Manual' }, o);
-  D.tx.push(tmp); D.tx.sort((a, b) => b.t - a.t); closeSheet(); render(false); toast('Added ' + inr(amount));
+  D.tx.push(tmp); D.tx.sort((a, b) => b.t - a.t); closeSheet(); render(false);
+  toast(isSplit ? `Added · your share ${inr(share)}` : 'Added ' + inr(share));
   mutate('add', { o }).then(r => { Object.assign(tmp, r.tx); persist(); render(false); })
     .catch(e => { D.tx = D.tx.filter(x => x !== tmp); render(false); toast("Couldn't add: " + e.message); });
+}
+
+/* ---------- MANAGE CATEGORIES ---------- */
+function openCats() { drawCats(); openSheet(undefined, 'cats'); }
+function drawCats() {
+  const cnt = c => D.tx.filter(x => x.cat === c).length;
+  $('sb').innerHTML = `<div class="lbl c">Categories</div>
+    <div class="t2 wrap" style="text-align:center;margin:6px 0 12px">Renames update past spends too</div>
+    <div class="card list" style="margin:0">${D.cats.map(([c, subs]) => {
+      const col = colorOf(c), on = mcOpen === c, fixed = c === D.notSpend, n = cnt(c);
+      return `<div class="mc"><button class="mrow" onclick="toggleMc('${enc(c)}')"><span class="oi" style="color:${col};background:${tint(col, .13)}">${catIcon(c)}</span>
+        <div class="grow"><div class="t1">${esc(c)}</div><div class="t2">${subs.length} sub${subs.length === 1 ? '' : 's'} · ${n} spend${n === 1 ? '' : 's'}</div></div>${svg(P.chevR, 'ic sm' + (on ? ' on' : ''))}</button>
+        ${on ? `<div class="mbody">
+          ${fixed ? '<div class="t2" style="margin-bottom:8px">Built-in · kept out of totals</div>'
+                  : `<div class="macts"><button class="chip sm" onclick="catRename('${enc(c)}')">Rename</button><button class="chip sm red" onclick="catDelete('${enc(c)}')">Delete</button></div>`}
+          ${subs.map(s => `<div class="msub"><span>${esc(s)}</span>
+            <button class="mini" onclick="subRename('${enc(c)}','${enc(s)}')" aria-label="Rename">${svg(P.edit)}</button>
+            <button class="mini red" onclick="subDelete('${enc(c)}','${enc(s)}')" aria-label="Delete">${svg(P.trash)}</button></div>`).join('')}
+          <button class="chip sm add" onclick="subAdd('${enc(c)}')">＋ Add subcategory</button></div>` : ''}</div>`;
+    }).join('')}</div>
+    <button class="btn" onclick="catAdd()">＋ New category</button>`;
+}
+function toggleMc(e) { const c = dec(e); mcOpen = mcOpen === c ? null : c; drawCats(); }
+const ask = (msg, def) => { const v = prompt(msg, def || ''); return v === null ? '' : v.trim(); };
+function catAdd() {
+  const c = ask('New category'); if (!c) return;
+  if (c === D.notSpend || D.cats.some(k => k[0].toLowerCase() === c.toLowerCase())) return toast('Already exists');
+  mcOpen = c; catOp({ type: 'addCat', cat: c }, 'Added ' + c);
+}
+function catRename(e) {
+  const c = dec(e), to = ask('Rename ' + c, c); if (!to || to === c) return;
+  if (to === D.notSpend || D.cats.some(k => k[0] === to)) return toast('Already exists');
+  catOp({ type: 'renameCat', cat: c, to }, 'Renamed to ' + to);
+}
+function catDelete(e) {
+  const c = dec(e), n = D.tx.filter(x => x.cat === c).length;
+  if (!confirm(`Delete "${c}"?` + (n ? `\n${n} spend${n > 1 ? 's' : ''} will become untagged.` : ''))) return;
+  catOp({ type: 'delCat', cat: c }, 'Deleted ' + c);
+}
+function subAdd(e) {
+  const c = dec(e), s = ask('New subcategory for ' + c); if (!s) return;
+  if (subsOf(c).includes(s)) return toast('Already exists');
+  catOp({ type: 'addSub', cat: c, sub: s }, 'Added ' + s);
+}
+function subRename(e, f) {
+  const c = dec(e), s = dec(f), to = ask('Rename ' + s, s); if (!to || to === s) return;
+  if (subsOf(c).includes(to)) return toast('Already exists');
+  catOp({ type: 'renameSub', cat: c, sub: s, to }, 'Renamed to ' + to);
+}
+function subDelete(e, f) {
+  const c = dec(e), s = dec(f), n = D.tx.filter(x => x.cat === c && x.sub === s).length;
+  if (!confirm(`Delete "${s}"?` + (n ? `\n${n} spend${n > 1 ? 's' : ''} will stay in ${c} without a subcategory.` : ''))) return;
+  catOp({ type: 'delSub', cat: c, sub: s }, 'Deleted ' + s);
+}
+function localCatOp(op) {
+  const find = c => D.cats.find(k => k[0] === c);
+  let map = null;
+  if (op.type === 'addCat') D.cats.push([op.cat, []]);
+  if (op.type === 'renameCat') { find(op.cat)[0] = op.to; map = x => { if (x.cat === op.cat) x.cat = op.to; }; }
+  if (op.type === 'delCat') { D.cats = D.cats.filter(k => k[0] !== op.cat); map = x => { if (x.cat === op.cat) Object.assign(x, { cat: '', sub: '', by: '' }); }; }
+  if (op.type === 'addSub') find(op.cat)[1].push(op.sub);
+  if (op.type === 'renameSub') { const k = find(op.cat); k[1][k[1].indexOf(op.sub)] = op.to; map = x => { if (x.cat === op.cat && x.sub === op.sub) x.sub = op.to; }; }
+  if (op.type === 'delSub') { const k = find(op.cat); k[1].splice(k[1].indexOf(op.sub), 1); map = x => { if (x.cat === op.cat && x.sub === op.sub) x.sub = ''; }; }
+  if (map) D.tx.forEach(map);
+}
+function catOp(op, msg) {
+  localCatOp(op);
+  if (op.type === 'renameCat' && mcOpen === op.cat) mcOpen = op.to;
+  if (sheetOn && sheetKind === 'cats') drawCats();
+  persist(); render(false);
+  mutate('cats', { op }).then(r => {
+    D.cats = r.cats; persist();
+    if (sheetOn && sheetKind === 'cats') drawCats();
+    render(false); toast(msg);
+  }).catch(e => { toast("Couldn't save: " + e.message); load(); });
 }
 
 /* ---------- TRENDS ---------- */
@@ -805,8 +967,9 @@ function calendar(daily, isCur, upto) {
 }
 
 /* ---------- sheet ---------- */
-function openSheet(html) {
+function openSheet(html, kind) {
   const s = $('sheet');
+  sheetKind = kind || '';
   if (html !== undefined) $('sb').innerHTML = html;
   $('panel').scrollTop = 0;
   if (sheetOn) return;
@@ -815,7 +978,7 @@ function openSheet(html) {
 }
 function closeSheet() {
   if (!sheetOn) return;
-  sheetOn = false;
+  sheetOn = false; sheetKind = '';
   const s = $('sheet'); s.classList.remove('open'); $('panel').style.transform = '';
   clearTimeout(s._t); s._t = setTimeout(() => { if (!sheetOn) s.classList.remove('on'); }, 380);
   if (document.activeElement) document.activeElement.blur();
@@ -867,15 +1030,38 @@ function closeSheet() {
   }, { passive: true });
 })();
 
-/* ---------- home-screen icon ---------- */
+/* ---------- home-screen icon: ₹ engraved into a black block, optically centred ---------- */
 function makeIcon() {
-  const c = document.createElement('canvas'); c.width = c.height = 180; const g = c.getContext('2d');
-  g.fillStyle = '#0a0a0b'; g.fillRect(0, 0, 180, 180);
-  g.fillStyle = '#3ddc84'; g.font = '800 112px "Plus Jakarta Sans", -apple-system, sans-serif';
-  g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('₹', 90, 98);
+  const S = 180, FONT = '800 118px "Plus Jakarta Sans", -apple-system, sans-serif';
+  const mk = () => { const k = document.createElement('canvas'); k.width = k.height = S; const t = k.getContext('2d'); t.font = FONT; t.textAlign = 'left'; t.textBaseline = 'alphabetic'; return [k, t]; };
+  const [c, g] = mk();
+  const bg = g.createLinearGradient(0, 0, 0, S); bg.addColorStop(0, '#17171a'); bg.addColorStop(1, '#050506');
+  g.fillStyle = bg; g.fillRect(0, 0, S, S);
+
+  const m = g.measureText('₹');
+  const L = m.actualBoundingBoxLeft || 0, R = m.actualBoundingBoxRight || m.width;
+  const A = m.actualBoundingBoxAscent || 84, Dn = m.actualBoundingBoxDescent || 0;
+  const x = S / 2 + (L - R) / 2, y = S / 2 + (A - Dn) / 2;
+
+  // light catching the lower lip of the cut
+  g.fillStyle = 'rgba(255,255,255,.11)'; g.fillText('₹', x, y + 2);
+
+  // the cut: green floor, darker toward the top edge
+  const [fill, f] = mk();
+  const gr = f.createLinearGradient(0, y - A, 0, y + Dn); gr.addColorStop(0, '#1d8f52'); gr.addColorStop(1, '#3ddc84');
+  f.fillStyle = gr; f.fillText('₹', x, y);
+
+  // inner shadow from the top wall of the cut
+  const [hole, h] = mk();
+  h.fillStyle = '#000'; h.fillRect(0, 0, S, S); h.globalCompositeOperation = 'destination-out'; h.fillText('₹', x, y);
+  f.globalCompositeOperation = 'source-atop';
+  f.shadowColor = 'rgba(0,0,0,.9)'; f.shadowBlur = 7; f.shadowOffsetY = 5;
+  f.drawImage(hole, 0, 0);
+
+  g.drawImage(fill, 0, 0);
   $('touchicon').href = c.toDataURL('image/png');
 }
-(document.fonts ? document.fonts.ready : Promise.resolve()).then(makeIcon);
+(document.fonts ? document.fonts.load('800 118px "Plus Jakarta Sans"', '₹').catch(() => {}) : Promise.resolve()).then(makeIcon);
 
 /* ---------- boot ---------- */
 document.addEventListener('visibilitychange', () => { if (!document.hidden) load(); });

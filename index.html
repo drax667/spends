@@ -18,8 +18,10 @@
   --acc:#3ddc84;--accBg:rgba(61,220,132,.1);--accLine:rgba(61,220,132,.32);--accInk:#04230e;--red:#ff6b6b;--amber:#f6b945;--r:20px;
   --ease:cubic-bezier(.2,.9,.25,1);--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
 @supports (color:color(display-p3 0 0 0)){:root{--acc:color(display-p3 .32 .86 .54);--red:color(display-p3 1 .45 .43);--amber:color(display-p3 .97 .74 .32)}}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html{background:var(--bg);-webkit-text-size-adjust:100%;overscroll-behavior:none}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;scrollbar-width:none}
+*::-webkit-scrollbar{display:none;width:0;height:0;background:transparent}
+html{background:var(--bg);-webkit-text-size-adjust:100%;overscroll-behavior:none;scrollbar-width:none}
+html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
 body{background:var(--bg);color:var(--ink);font:500 13px/1.45 "Plus Jakarta Sans",-apple-system,system-ui,sans-serif;letter-spacing:-.01em;min-height:100vh;
   max-width:480px;margin:0 auto;padding:0 16px calc(108px + var(--sab));-webkit-font-smoothing:antialiased;overscroll-behavior:none;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -706,7 +708,6 @@ function saveTag(e) {
   const share = r2(shareOf());
   if (pick.n === 'c' && !(share > 0 && share <= pick.base)) {
     pick.saving = false;
-    document.querySelectorAll('#paneCat .opt.on, #paneSub .sopt.on').forEach(b => { if (!b.closest('#paneSub') || pick.step === 'sub') {} });
     toast('Enter your share (up to ' + inr(pick.base) + ')');
     revealCustom('tgShare');
     return;
@@ -1118,16 +1119,17 @@ function closeSheet() {
 function makeIcon() {
   const S = 1024, FONT = '400 660px "Plus Jakarta Sans", -apple-system, sans-serif';
   const RED = '#f2553c', RED_DARK = '#c7402c', BG = '#0d0d0f';
+  const NUDGE = 36;   // optical shift left (px of 1024): ₹ is visually heavier on the right
   const mk = () => { const k = document.createElement('canvas'); k.width = k.height = S; const t = k.getContext('2d'); t.font = FONT; t.textAlign = 'left'; t.textBaseline = 'alphabetic'; return [k, t]; };
 
   const [c, g] = mk();
   g.fillStyle = BG; g.fillRect(0, 0, S, S);
 
-  // optically centre the glyph using its real shape
+  // centre the glyph using its real shape, then nudge left for optical balance
   const m = g.measureText('₹');
   const L = m.actualBoundingBoxLeft || 0, R = m.actualBoundingBoxRight || m.width;
   const A = m.actualBoundingBoxAscent || 470, Dn = m.actualBoundingBoxDescent || 0;
-  const x = S / 2 + (L - R) / 2, y = S / 2 + (A - Dn) / 2;
+  const x = S / 2 + (L - R) / 2 - NUDGE, y = S / 2 + (A - Dn) / 2;
   const left = x - L, right = x + R, top = y - A, bottom = y + Dn;
 
   // ₹ in flat red, with a darker diagonal fold across its lower-right half

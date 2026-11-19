@@ -42,9 +42,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
 .month span{font-size:12.5px;font-weight:700;min-width:76px;text-align:center}
-/* calm loading glow: fades in only if loading takes a moment */
-.lbar{position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
+/* calm loading glow: same width as the cards, fades in only if loading takes a moment */
+.lbar{position:absolute;left:16px;right:16px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
 .lbar::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:2px;
   background:linear-gradient(90deg,transparent,rgba(61,220,132,.7),transparent);animation:glide 1.8s cubic-bezier(.45,0,.55,1) infinite}
 .lbar.on{opacity:1}
@@ -400,6 +400,8 @@ async function api(action, payload) {
   const res = await fetch(API, { method: 'POST', body: JSON.stringify(Object.assign({ key: KEY, action }, payload || {})) });
   const j = await res.json();
   if (!j.ok) { const e = new Error(j.error || 'Request failed'); e.code = j.error; throw e; }
+  // our own write moved the server version on from the one we hold → stay in sync (no full re-download needed)
+  if (j.ver && D.ver && j.prev === D.ver) { D.ver = j.ver; persist(); }
   return j.data;
 }
 async function mutate(action, payload) {
@@ -407,13 +409,15 @@ async function mutate(action, payload) {
   try { return await api(action, payload); }
   finally { inflight--; if (!inflight && reloadAfter) { reloadAfter = false; load(); } }
 }
-async function load() {
+// load() = quick check (server says "same" if nothing changed). load(true) = full reload (pull to refresh).
+async function load(force) {
   if (!KEY || !API) return renderSetup();
   if (inflight) { reloadAfter = true; return; }
   setBar(true);
   try {
-    const d = await api('getData');
+    const d = await api('getData', { ver: force === true ? '' : (D.ver || '') });
     if (inflight) { reloadAfter = true; return; }
+    if (d.same) { if (!loaded) { loaded = true; render(true); } return; }
     d.tx.sort((a, b) => b.t - a.t);
     const first = !loaded;
     D = d; loaded = true; persist(); render(first);
@@ -421,7 +425,7 @@ async function load() {
   } catch (e) {
     if (e.code === 'unauthorised') { store.del('spends.key'); KEY = ''; return renderSetup("That secret key didn't work. Try again."); }
     if (!loaded) $('view').innerHTML = `<div class="empty">${svg(P.q, 'ic xl')}<b>Couldn't load</b><span>${esc(e.message)}</span>
-      <button class="btn sm" onclick="load()">Retry</button><button class="link" onclick="resetSetup()">Change link or key</button></div>`;
+      <button class="btn sm" onclick="load(true)">Retry</button><button class="link" onclick="resetSetup()">Change link or key</button></div>`;
     else toast('Offline · showing saved data');
   } finally { setBar(false); }
 }
@@ -466,7 +470,7 @@ function saveKey() {
   const a = $('ain').value.trim(), k = $('kin').value.trim();
   if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(a)) return toast('Paste the link that ends in /exec');
   if (!k) return toast('Enter your secret key');
-  API = a; KEY = k; store.set('spends.api', a); store.set('spends.key', k); renderSkeleton(); load();
+  API = a; KEY = k; store.set('spends.api', a); store.set('spends.key', k); renderSkeleton(); load(true);
 }
 function resetSetup() { store.del('spends.api'); store.del('spends.key'); API = ''; KEY = ''; renderSetup(); }
 
@@ -918,7 +922,7 @@ function catOp(op, msg) {
     D.cats = r.cats; persist();
     if (sheetOn && sheetKind === 'cats') drawCats();
     render(false); toast(msg);
-  }).catch(e => { toast("Couldn't save: " + e.message); load(); });
+  }).catch(e => { toast("Couldn't save: " + e.message); load(true); });
 }
 
 /* ---------- TRENDS ---------- */
@@ -1103,7 +1107,7 @@ function closeSheet() {
     if (py === null) return;
     const t = e.changedTouches[0], d = t.clientY - py, dx = Math.abs(t.clientX - px); py = null;
     ptr.style.opacity = 0; ptr.style.transform = '';
-    if (d > 80 && d > dx) load();
+    if (d > 80 && d > dx) load(true);   // pull to refresh = full reload
   });
 
   let sx = null, sy2 = 0, ok = false;

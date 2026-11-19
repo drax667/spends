@@ -42,9 +42,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
 .month span{font-size:12.5px;font-weight:700;min-width:76px;text-align:center}
-/* calm loading glow: same width as the cards, fades in only if loading takes a moment */
-.lbar{position:absolute;left:16px;right:16px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+/* calm loading glow: spans the straight part of the card's top edge (inside its rounded corners), fades in only if loading takes a moment */
+.lbar{position:absolute;left:calc(16px + var(--r));right:calc(16px + var(--r));bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .lbar::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:2px;
   background:linear-gradient(90deg,transparent,rgba(61,220,132,.7),transparent);animation:glide 1.8s cubic-bezier(.45,0,.55,1) infinite}
 .lbar.on{opacity:1}

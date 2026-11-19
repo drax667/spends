@@ -18,10 +18,8 @@
   --acc:#3ddc84;--accBg:rgba(61,220,132,.1);--accLine:rgba(61,220,132,.32);--accInk:#04230e;--red:#ff6b6b;--amber:#f6b945;--r:20px;
   --ease:cubic-bezier(.2,.9,.25,1);--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
 @supports (color:color(display-p3 0 0 0)){:root{--acc:color(display-p3 .32 .86 .54);--red:color(display-p3 1 .45 .43);--amber:color(display-p3 .97 .74 .32)}}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;scrollbar-width:none}
-*::-webkit-scrollbar{display:none;width:0;height:0;background:transparent}
-html{background:var(--bg);-webkit-text-size-adjust:100%;overscroll-behavior:none;scrollbar-width:none}
-html::-webkit-scrollbar,body::-webkit-scrollbar{display:none;width:0;height:0}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg);-webkit-text-size-adjust:100%;overscroll-behavior:none}
 body{background:var(--bg);color:var(--ink);font:500 13px/1.45 "Plus Jakarta Sans",-apple-system,system-ui,sans-serif;letter-spacing:-.01em;min-height:100vh;
   max-width:480px;margin:0 auto;padding:0 16px calc(108px + var(--sab));-webkit-font-smoothing:antialiased;overscroll-behavior:none;
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -42,9 +40,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
 .month span{font-size:12.5px;font-weight:700;min-width:76px;text-align:center}
-/* calm loading glow: spans the straight part of the card's top edge (inside its rounded corners), fades in only if loading takes a moment */
-.lbar{position:absolute;left:calc(16px + var(--r));right:calc(16px + var(--r));bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+/* calm loading glow: fades in only if loading takes a moment (instantly on pull-to-refresh) */
+.lbar{position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
 .lbar::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:2px;
   background:linear-gradient(90deg,transparent,rgba(61,220,132,.7),transparent);animation:glide 1.8s cubic-bezier(.45,0,.55,1) infinite}
 .lbar.on{opacity:1}
@@ -396,38 +394,69 @@ let barT;
 const setBar = on => { clearTimeout(barT); if (on) barT = setTimeout(() => $('lbar').classList.add('on'), 350); else $('lbar').classList.remove('on'); };
 
 /* ---------- server ---------- */
+// Every request has a time limit, so one stuck request (e.g. iPhone paused the app mid-save)
+// can never block refreshing again.
+const reqs = new Set();
 async function api(action, payload) {
-  const res = await fetch(API, { method: 'POST', body: JSON.stringify(Object.assign({ key: KEY, action }, payload || {})) });
-  const j = await res.json();
-  if (!j.ok) { const e = new Error(j.error || 'Request failed'); e.code = j.error; throw e; }
-  // our own write moved the server version on from the one we hold → stay in sync (no full re-download needed)
-  if (j.ver && D.ver && j.prev === D.ver) { D.ver = j.ver; persist(); }
-  return j.data;
+  const r = { ctl: new AbortController(), t0: Date.now(), ms: action === 'getData' ? 25000 : 30000 };
+  reqs.add(r);
+  const timer = setTimeout(() => r.ctl.abort(), r.ms);
+  try {
+    const res = await fetch(API, { method: 'POST', cache: 'no-store', signal: r.ctl.signal,
+      body: JSON.stringify(Object.assign({ key: KEY, action }, payload || {})) });
+    const j = await res.json();
+    if (!j.ok) { const e = new Error(j.error || 'Request failed'); e.code = j.error; throw e; }
+    return j.data;
+  } catch (e) {
+    if (r.ctl.signal.aborted) { const t = new Error('Timed out'); t.code = 'timeout'; throw t; }
+    throw e;
+  } finally { clearTimeout(timer); reqs.delete(r); }
 }
+// iPhone freezes timers while the app is in the background; on return, cancel anything overdue
+function sweepStale() { const now = Date.now(); reqs.forEach(r => { if (now - r.t0 > r.ms) r.ctl.abort(); }); }
 async function mutate(action, payload) {
   inflight++;
   try { return await api(action, payload); }
+  catch (e) { if (e.code === 'timeout') reloadAfter = true; throw e; }   // may have saved anyway → re-check with server
   finally { inflight--; if (!inflight && reloadAfter) { reloadAfter = false; load(); } }
 }
-// load() = quick check (server says "same" if nothing changed). load(true) = full reload (pull to refresh).
-async function load(force) {
-  if (!KEY || !API) return renderSetup();
-  if (inflight) { reloadAfter = true; return; }
-  setBar(true);
+let loadSeq = 0, applied = 0, loadingN = 0, curLoad = null, wantToast = false;
+function load() {
+  if (!KEY || !API) { renderSetup(); return Promise.resolve(); }
+  sweepStale();
+  if (inflight) { reloadAfter = true; return Promise.resolve(); }
+  if (curLoad && Date.now() - curLoad.t0 < 8000) return curLoad.p;   // a refresh just started — join it
+  const p = fetchData(++loadSeq);
+  curLoad = { p, t0: Date.now() };
+  p.then(() => { if (curLoad && curLoad.p === p) curLoad = null; });
+  return p;
+}
+async function fetchData(my) {
+  loadingN++; setBar(true);
   try {
-    const d = await api('getData', { ver: force === true ? '' : (D.ver || '') });
+    const d = await api('getData');
+    if (my < applied) return;                       // a newer refresh already landed
     if (inflight) { reloadAfter = true; return; }
-    if (d.same) { if (!loaded) { loaded = true; render(true); } return; }
+    applied = my;
     d.tx.sort((a, b) => b.t - a.t);
     const first = !loaded;
     D = d; loaded = true; persist(); render(first);
     if (sheetOn && sheetKind === 'cats') drawCats();
+    if (wantToast) { wantToast = false; toast('Up to date'); }
   } catch (e) {
+    if (my < loadSeq) return;                       // a newer refresh is on its way
+    wantToast = false;
     if (e.code === 'unauthorised') { store.del('spends.key'); KEY = ''; return renderSetup("That secret key didn't work. Try again."); }
     if (!loaded) $('view').innerHTML = `<div class="empty">${svg(P.q, 'ic xl')}<b>Couldn't load</b><span>${esc(e.message)}</span>
-      <button class="btn sm" onclick="load(true)">Retry</button><button class="link" onclick="resetSetup()">Change link or key</button></div>`;
-    else toast('Offline · showing saved data');
-  } finally { setBar(false); }
+      <button class="btn sm" onclick="load()">Retry</button><button class="link" onclick="resetSetup()">Change link or key</button></div>`;
+    else toast(e.code === 'timeout' ? 'Server is slow · showing saved data' : 'Offline · showing saved data');
+  } finally { if (--loadingN <= 0) { loadingN = 0; setBar(false); } }
+}
+// pull-to-refresh: the header glow shows right away (no 350ms wait) and stays until done
+function pullRefresh() {
+  wantToast = true;
+  load();
+  if (loadingN) { clearTimeout(barT); $('lbar').classList.add('on'); }
 }
 
 /* ---------- shell ---------- */
@@ -470,7 +499,7 @@ function saveKey() {
   const a = $('ain').value.trim(), k = $('kin').value.trim();
   if (!/^https:\/\/script\.google\.com\/.+\/exec$/.test(a)) return toast('Paste the link that ends in /exec');
   if (!k) return toast('Enter your secret key');
-  API = a; KEY = k; store.set('spends.api', a); store.set('spends.key', k); renderSkeleton(); load(true);
+  API = a; KEY = k; store.set('spends.api', a); store.set('spends.key', k); renderSkeleton(); load();
 }
 function resetSetup() { store.del('spends.api'); store.del('spends.key'); API = ''; KEY = ''; renderSetup(); }
 
@@ -922,7 +951,7 @@ function catOp(op, msg) {
     D.cats = r.cats; persist();
     if (sheetOn && sheetKind === 'cats') drawCats();
     render(false); toast(msg);
-  }).catch(e => { toast("Couldn't save: " + e.message); load(true); });
+  }).catch(e => { toast("Couldn't save: " + e.message); load(); });
 }
 
 /* ---------- TRENDS ---------- */
@@ -1094,7 +1123,7 @@ function closeSheet() {
   });
 
   const ptr = $('ptr'); let py = null, px = 0;
-  addEventListener('touchstart', e => { if (sheetOn || scrollY > 0) { py = null; return; } py = e.touches[0].clientY; px = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchstart', e => { if (sheetOn || scrollY > 2) { py = null; return; } py = e.touches[0].clientY; px = e.touches[0].clientX; }, { passive: true });
   addEventListener('touchmove', e => {
     if (py === null) return;
     const d = e.touches[0].clientY - py, dx = Math.abs(e.touches[0].clientX - px);
@@ -1107,7 +1136,7 @@ function closeSheet() {
     if (py === null) return;
     const t = e.changedTouches[0], d = t.clientY - py, dx = Math.abs(t.clientX - px); py = null;
     ptr.style.opacity = 0; ptr.style.transform = '';
-    if (d > 80 && d > dx) load(true);   // pull to refresh = full reload
+    if (d > 80 && d > dx) pullRefresh();
   });
 
   let sx = null, sy2 = 0, ok = false;
@@ -1123,17 +1152,16 @@ function closeSheet() {
 function makeIcon() {
   const S = 1024, FONT = '400 660px "Plus Jakarta Sans", -apple-system, sans-serif';
   const RED = '#f2553c', RED_DARK = '#c7402c', BG = '#0d0d0f';
-  const NUDGE = 36;   // optical shift left (px of 1024): ₹ is visually heavier on the right
   const mk = () => { const k = document.createElement('canvas'); k.width = k.height = S; const t = k.getContext('2d'); t.font = FONT; t.textAlign = 'left'; t.textBaseline = 'alphabetic'; return [k, t]; };
 
   const [c, g] = mk();
   g.fillStyle = BG; g.fillRect(0, 0, S, S);
 
-  // centre the glyph using its real shape, then nudge left for optical balance
+  // optically centre the glyph using its real shape
   const m = g.measureText('₹');
   const L = m.actualBoundingBoxLeft || 0, R = m.actualBoundingBoxRight || m.width;
   const A = m.actualBoundingBoxAscent || 470, Dn = m.actualBoundingBoxDescent || 0;
-  const x = S / 2 + (L - R) / 2 - NUDGE, y = S / 2 + (A - Dn) / 2;
+  const x = S / 2 + (L - R) / 2, y = S / 2 + (A - Dn) / 2;
   const left = x - L, right = x + R, top = y - A, bottom = y + Dn;
 
   // ₹ in flat red, with a darker diagonal fold across its lower-right half

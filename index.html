@@ -835,8 +835,22 @@ function openAdd() {
     <div id="a_s"></div>
     <label>When</label><input id="a_t" type="datetime-local" value="${local}">
     <label>Note</label><input id="a_n" placeholder="Optional">
-    <button class="btn" onclick="addTx()">Add spend</button></div>`);
-  $('a_amt').focus();
+        <button class="btn" onclick="addTx()">Add spend</button></div>`);
+  focusAfterSheet('a_amt');
+}
+// iPhone only opens the keyboard from a tap, and mis-scrolls if the field is still sliding in.
+// So: focus an invisible stand-in now (keyboard opens), then move to the real field once the sheet has settled.
+function focusAfterSheet(id) {
+  const tmp = document.createElement('input');
+  tmp.setAttribute('inputmode', 'decimal');
+  tmp.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;min-height:0;padding:0;border:0;opacity:0;font-size:16px;pointer-events:none';
+  document.body.appendChild(tmp);
+  tmp.focus({ preventScroll: true });
+  setTimeout(() => {
+    const el = $(id);
+    if (sheetOn && el) { el.focus({ preventScroll: true }); $('panel').scrollTop = 0; }
+    tmp.remove();
+  }, 420);
 }
 function addSplit(n) {
   add.n = n;

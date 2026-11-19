@@ -40,8 +40,9 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .month button{width:34px;height:32px;color:var(--mute);display:grid;place-items:center}
 .month button:disabled{opacity:.25}
 .month span{font-size:12.5px;font-weight:700;min-width:76px;text-align:center}
-/* calm loading glow: fades in only if loading takes a moment (instantly on pull-to-refresh) */
-.lbar{position:absolute;left:18px;right:18px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
+/* calm loading glow: shows only while a pull-to-refresh is loading.
+   36px in = card margin (16) + card corner radius (20), so it never runs past the card's flat top edge */
+.lbar{position:absolute;left:36px;right:36px;bottom:0;height:2px;border-radius:2px;overflow:hidden;opacity:0;transition:opacity .6s ease;pointer-events:none;
   -webkit-mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent);mask-image:linear-gradient(90deg,transparent,#000 22%,#000 78%,transparent)}
 .lbar::after{content:'';position:absolute;top:0;bottom:0;left:0;width:45%;border-radius:2px;
   background:linear-gradient(90deg,transparent,rgba(61,220,132,.7),transparent);animation:glide 1.8s cubic-bezier(.45,0,.55,1) infinite}
@@ -390,8 +391,8 @@ const dayLabel = t => {
 const dailyArr = (list, m) => { const a = Array(daysIn(m)).fill(0); list.forEach(x => a[new Date(x.t).getDate() - 1] += x.amount); return a; };
 const persist = () => store.set('spends.data', JSON.stringify(D));
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2600); }
-let barT;
-const setBar = on => { clearTimeout(barT); if (on) barT = setTimeout(() => $('lbar').classList.add('on'), 350); else $('lbar').classList.remove('on'); };
+const barOn = () => $('lbar').classList.add('on');
+const barOff = () => $('lbar').classList.remove('on');
 
 /* ---------- server ---------- */
 // Every request has a time limit, so one stuck request (e.g. iPhone paused the app mid-save)
@@ -421,6 +422,7 @@ async function mutate(action, payload) {
   finally { inflight--; if (!inflight && reloadAfter) { reloadAfter = false; load(); } }
 }
 let loadSeq = 0, applied = 0, loadingN = 0, curLoad = null, wantToast = false;
+// background refresh (opening the app) is silent — saved spends are already on screen
 function load() {
   if (!KEY || !API) { renderSetup(); return Promise.resolve(); }
   sweepStale();
@@ -432,7 +434,7 @@ function load() {
   return p;
 }
 async function fetchData(my) {
-  loadingN++; setBar(true);
+  loadingN++;
   try {
     const d = await api('getData');
     if (my < applied) return;                       // a newer refresh already landed
@@ -450,13 +452,13 @@ async function fetchData(my) {
     if (!loaded) $('view').innerHTML = `<div class="empty">${svg(P.q, 'ic xl')}<b>Couldn't load</b><span>${esc(e.message)}</span>
       <button class="btn sm" onclick="load()">Retry</button><button class="link" onclick="resetSetup()">Change link or key</button></div>`;
     else toast(e.code === 'timeout' ? 'Server is slow · showing saved data' : 'Offline · showing saved data');
-  } finally { if (--loadingN <= 0) { loadingN = 0; setBar(false); } }
+  } finally { if (--loadingN <= 0) { loadingN = 0; barOff(); } }
 }
-// pull-to-refresh: the header glow shows right away (no 350ms wait) and stays until done
+// pull-to-refresh: the only time the header glow shows; stays until the refresh is done
 function pullRefresh() {
   wantToast = true;
   load();
-  if (loadingN) { clearTimeout(barT); $('lbar').classList.add('on'); }
+  if (loadingN) barOn();
 }
 
 /* ---------- shell ---------- */
